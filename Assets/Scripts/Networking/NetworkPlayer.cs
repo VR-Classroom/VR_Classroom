@@ -11,7 +11,7 @@ public class NetworkPlayer : Photon.MonoBehaviour{
         if (photonView.isMine)
         {
             myCamera.SetActive(true);
-            GetComponent<Raycast_Hit>().enabled = true;
+            //GetComponent<Raycast_Hit>().enabled = true;
             //GetComponent<Camera>().enabled = true;
         }
         else {
