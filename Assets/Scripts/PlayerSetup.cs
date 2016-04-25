@@ -19,17 +19,8 @@ public class PlayerSetup : NetworkBehaviour {
             {
                 componentsToDisable[i].enabled = false;
             }
-            if (CardboardMain != null)
-            {
-                Debug.Log("CardboardMain not null");
-                CardboardMain.gameObject.SetActive(false);
-            }
-            else
-            {
-                Debug.Log("CardboardMain null");
-            }
         }
-        else
+        if(SceenCamera != null && SceenCamera.activeSelf)
         {
             if (SceenCamera != null)
             {
@@ -53,15 +44,6 @@ public class PlayerSetup : NetworkBehaviour {
         else
         {
             Debug.Log("SceenCamera null");
-        }
-        if (CardboardMain != null)
-        {
-            Debug.Log("CardboardMain not null");
-            CardboardMain.gameObject.SetActive(false);
-        }
-        else
-        {
-            Debug.Log("CardboardMain null");
         }
     }
 }
