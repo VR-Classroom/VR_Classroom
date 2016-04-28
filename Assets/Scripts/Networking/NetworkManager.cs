@@ -7,22 +7,10 @@ public class NetworkManager : MonoBehaviour {
     public string roomName = "TEST";
     public string prefabName = "User";
     public Transform[] spawnPoints;
-    GameObject[] test;
 
-	void Start () {
+
+    void Start () {
         PhotonNetwork.ConnectUsingSettings(VERSION);
-        test[0] = GameObject.Find("SpawnPoint01");
-        test[1] = GameObject.Find("SpawnPoint02");
-        test[2] = GameObject.Find("SpawnPoint03");
-        test[3] = GameObject.Find("SpawnPoint04");
-        test[4] = GameObject.Find("SpawnPoint05");
-        test[5] = GameObject.Find("SpawnPoint06");
-        test[6] = GameObject.Find("SpawnPoint07");
-        test[7] = GameObject.Find("SpawnPoint08");
-        for(int i = 0; i +1 < test.Length; ++i)
-        {
-            test[i + 1].SetActive(false);
-        }
     }
 
     void OnJoinedLobby()
@@ -34,7 +22,20 @@ public class NetworkManager : MonoBehaviour {
     void OnJoinedRoom()
     {
         //TODO: figure out how to spawn players in order not randomly
-        Transform t = spawnPoints[Random.Range(0, spawnPoints.Length)];
+        GameObject SceenCamera = GameObject.Find("SceenCamera");
+        if (SceenCamera != null && SceenCamera.activeSelf)
+        {
+            if (SceenCamera != null)
+            {
+                Debug.Log("SceenCamera not null");
+                SceenCamera.gameObject.SetActive(false);
+            }
+            else
+            {
+                Debug.Log("SceenCamera null");
+            }
+        }
+        Transform t = spawnPoints[PhotonNetwork.playerList.Length - 1];
         PhotonNetwork.Instantiate(prefabName, t.position,t.rotation,0);
     }
 	
