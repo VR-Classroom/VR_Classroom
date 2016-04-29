@@ -12,7 +12,7 @@ public class ColorChange : MonoBehaviour {
 
     void HitByRaycast()
     {
-        Debug.Log("I was hit by a Ray");
+        //Debug.Log("I was hit by a Ray");
         hitbyraycast = true;
     }
 

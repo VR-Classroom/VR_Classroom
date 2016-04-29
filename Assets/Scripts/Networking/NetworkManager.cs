@@ -35,8 +35,38 @@ public class NetworkManager : MonoBehaviour {
                 Debug.Log("SceenCamera null");
             }
         }
-        Transform t = spawnPoints[PhotonNetwork.playerList.Length - 1];
+        int i = 0;
+        int[] usedSpawns = new int[10];
+        for(i = 0; i < usedSpawns.Length; ++i)
+        {
+            usedSpawns[i] = -1;
+        }
+        ExitGames.Client.Photon.Hashtable tmp = PhotonNetwork.room.customProperties;
+        i = 0;
+        foreach (string name in tmp.Keys)
+        {
+            usedSpawns[i] = ((int)(tmp[name]));
+            Debug.Log(usedSpawns[i]);
+            ++i;
+        }
+        for(i = 0; i < usedSpawns.Length; ++i)
+        {
+            bool unavailable = false;
+            for (int j =0; j < usedSpawns.Length; ++j)
+            {
+                if(i == usedSpawns[j])
+                {
+                    unavailable = true;
+                }
+            }
+            if (!unavailable)
+                break;
+        }
+        Transform t = spawnPoints[i];
         PhotonNetwork.Instantiate(prefabName, t.position,t.rotation,0);
+        ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+        h.Add("spawnPlayer" + i, i);
+        PhotonNetwork.room.SetCustomProperties(h, null, false);
     }
 	
 }
