@@ -46,7 +46,7 @@ public class NetworkManager : MonoBehaviour {
         foreach (string name in tmp.Keys)
         {
             usedSpawns[i] = ((int)(tmp[name]));
-            Debug.Log(usedSpawns[i]);
+            //Debug.Log(usedSpawns[i]);
             ++i;
         }
         for(i = 0; i < usedSpawns.Length; ++i)
@@ -66,7 +66,10 @@ public class NetworkManager : MonoBehaviour {
         PhotonNetwork.Instantiate(prefabName, t.position,t.rotation,0);
         ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
         h.Add("spawnPlayer" + i, i);
-        PhotonNetwork.room.SetCustomProperties(h, null, false);
+        PhotonNetwork.room.SetCustomProperties(h);
+        ExitGames.Client.Photon.Hashtable playeraAdd = new ExitGames.Client.Photon.Hashtable();
+        playeraAdd.Add("myspawn", i);
+        PhotonNetwork.player.SetCustomProperties(playeraAdd);
     }
 	
 }
