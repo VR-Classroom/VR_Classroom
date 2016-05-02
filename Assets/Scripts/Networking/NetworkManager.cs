@@ -7,6 +7,8 @@ public class NetworkManager : MonoBehaviour {
     public string roomName = "TEST";
     public string prefabName = "User";
     public Transform[] spawnPoints;
+    [SerializeField]
+    public Transform TeacherspawnPoints;
 
 
     void Start () {
@@ -70,6 +72,28 @@ public class NetworkManager : MonoBehaviour {
         ExitGames.Client.Photon.Hashtable playeraAdd = new ExitGames.Client.Photon.Hashtable();
         playeraAdd.Add("myspawn", i);
         PhotonNetwork.player.SetCustomProperties(playeraAdd);
+    }
+
+    void Update()
+    {
+        int i = 0;
+        int[] usedSpawns = new int[8];
+        for (i = 0; i < usedSpawns.Length; ++i)
+        {
+            usedSpawns[i] = -1;
+        }
+        int j = 0;
+        foreach (var player in PhotonNetwork.playerList)
+        {
+            j = (int)player.customProperties["myspawn"];
+            usedSpawns[j] = j;
+        }
+        ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+        for (i = 0; i < usedSpawns.Length; ++i)
+        {
+            h.Add("spawnPlayer" + i, usedSpawns[i]);
+        }
+        PhotonNetwork.room.SetCustomProperties(h);
     }
 	
 }
