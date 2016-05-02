@@ -51,26 +51,15 @@ public class LoginMenuScript : MonoBehaviour {
         passTxt = pass.text.Trim();
         if(passTxt != "" && emailTxt != "")
         {
-            Debug.Log("Calling waitcheck");
-            //todo check with mysql
-            //StartCoroutine(waitCheck());
+            //Debug.Log("Calling waitcheck");
             StartCoroutine( waitCheck());
-            //if (validateUser())
-            //{
-            //    Debug.Log("Loading classroom");
-            //    SceneManager.LoadScene("classroom");
-            //}
-            //else
-            //{
-            //    Debug.Log("returned not valid user");
-            //}
         }
     }
 
 
     public void RegisterPress()
     {
-        //TODO: load register scene
+        SceneManager.LoadScene("RegisterMenu");
     }
 
     public void ExitPress()
@@ -105,22 +94,7 @@ public class LoginMenuScript : MonoBehaviour {
 
         displayExit = !displayExit;
     }
-
-    bool validateUser()
-    {
-        //IEnumerator t = waitCheck();
-        //for(int i = 0; i < 5; ++i)
-        //{
-        //    waitCheck();
-        //    if (validLogin)
-        //        break;
-        //}
-        //if (!validLogin)
-        //{
-        //    Debug.Log("couldn't get validLogin within 1 second");
-        //}
-        return validLogin;
-    }
+    
 
 
     IEnumerator waitCheck()
