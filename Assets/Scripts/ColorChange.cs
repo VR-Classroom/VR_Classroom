@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class ColorChange : MonoBehaviour {
 
@@ -26,7 +27,11 @@ public class ColorChange : MonoBehaviour {
             h.Add("spawnPlayer" + i, -1);
             PhotonNetwork.room.SetCustomProperties(h);
             PhotonNetwork.DestroyPlayerObjects(PhotonNetwork.player);
-            Application.Quit();
+
+            PhotonNetwork.Disconnect();
+
+            SceneManager.LoadScene("LoginMenu");
+            //Application.Quit();
             //Debug.Log("exiting");
         }
 
