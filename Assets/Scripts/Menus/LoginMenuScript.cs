@@ -3,7 +3,8 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class LoginMenuScript : MonoBehaviour {
+public class LoginMenuScript : MonoBehaviour
+{
 
 
     public Button Login;
@@ -30,7 +31,8 @@ public class LoginMenuScript : MonoBehaviour {
 
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         Login = Login.GetComponent<Button>();
         Register = Register.GetComponent<Button>();
         Exit = Exit.GetComponent<Button>();
@@ -41,18 +43,34 @@ public class LoginMenuScript : MonoBehaviour {
         exitMenu = exitMenu.GetComponent<Canvas>();
         yesExit = yesExit.GetComponent<Button>();
         noExit = noExit.GetComponent<Button>();
-        
+
         switchCanvis();
+
+
+        GameObject[] gos = GameObject.FindGameObjectsWithTag("PlayerInfo");
+
+
+        //Debug.Log("gosLength:" + gos.Length);
+        for (int i = 0; i < gos.Length - 1; ++i)
+        {
+            Destroy(gos[i]);
+            if (i == gos.Length - 2)
+            {
+                //Debug.Log("ResetingOne:");
+                PlayerInfo p = (PlayerInfo)gos[i + 1].GetComponent(typeof(PlayerInfo));
+                p.resetInfo();
+            }
+        }
     }
-	
+
     public void LoginPress()
     {
         emailTxt = username.text.Trim();
         passTxt = pass.text.Trim();
-        if(passTxt != "" && emailTxt != "")
+        if (passTxt != "" && emailTxt != "")
         {
             //Debug.Log("Calling waitcheck");
-            StartCoroutine( waitCheck());
+            StartCoroutine(waitCheck());
         }
     }
 
@@ -66,12 +84,12 @@ public class LoginMenuScript : MonoBehaviour {
     {
         switchCanvis();
     }
-    
+
     public void NoPress()
     {
         switchCanvis();
     }
-    
+
 
     public void ExitGame()
     {
@@ -94,7 +112,7 @@ public class LoginMenuScript : MonoBehaviour {
 
         displayExit = !displayExit;
     }
-    
+
 
 
     IEnumerator waitCheck()
@@ -130,45 +148,15 @@ public class LoginMenuScript : MonoBehaviour {
                 //string[] rows = data.Split(';');
                 //Debug.Log(GetValue(rows[0], "email"));
                 //Debug.Log(download.text);
+                GameObject t = GameObject.Find("PlayerInfo");
+                PlayerInfo p = (PlayerInfo)t.GetComponent(typeof(PlayerInfo));
+                p.initPlayer(data);
                 Debug.Log("Valid User. TODO: save data before moving to new scene");
-                SceneManager.LoadScene("classroom");
+
+                //SceneManager.LoadScene("classroom");
+                SceneManager.LoadScene("ClassesMenu");
             }
         }
-
-        //MyWebRequest.Post(loginurl, form, (success, text) =>
-        //{
-        //    if (success)
-        //    {
-        //        if (text == null || text.Trim() == "")
-        //        {
-        //            Debug.Log("Invalid input");
-        //            validLogin = false;
-        //        }
-        //        else {
-
-        //            Debug.Log("Valid login");
-        //            validLogin = true;
-
-        //            //string[] rows = data.Split(';');
-        //            //Debug.Log(GetValue(rows[0], "email"));
-        //            //Debug.Log(download.text);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        Debug.Log("Failed");
-        //    }
-        //});
-
-
-        //yield return new WaitForSeconds(checkRate);
     }
 
-    string GetValue(string row, string name)
-    {
-        string value = row.Substring(row.IndexOf(name + ":") + name.Length + 1);
-        if (value.Contains("|"))
-            value = value.Remove(value.IndexOf("|"));
-        return value;
-    }
 }

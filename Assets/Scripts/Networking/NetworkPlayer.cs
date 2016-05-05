@@ -4,6 +4,7 @@ using System.Collections;
 public class NetworkPlayer : Photon.MonoBehaviour{
 
     public GameObject myCamera;
+    public GameObject sphere;
 
     // Use this for initialization
     void Start()
@@ -11,6 +12,9 @@ public class NetworkPlayer : Photon.MonoBehaviour{
         if (photonView.isMine)
         {
             myCamera.SetActive(true);
+            sphere.GetComponent<FollowCamera>().enabled = true;
+
+            //GetComponent<FollowCamera>().enabled = true;
             //GetComponent<Raycast_Hit>().enabled = true;
             //GetComponent<Camera>().enabled = true;
         }

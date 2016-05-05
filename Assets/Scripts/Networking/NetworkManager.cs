@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
-public class NetworkManager : MonoBehaviour {
+public class NetworkManager : MonoBehaviour
+{
 
-    const string VERSION = "v0.0.1";
+    const string VERSION = "v0.0.5";
     public string roomName = "TEST";
     public string prefabName = "User";
     public Transform[] spawnPoints;
@@ -11,8 +13,15 @@ public class NetworkManager : MonoBehaviour {
     public Transform TeacherspawnPoints;
 
 
-    void Start () {
-        PhotonNetwork.ConnectUsingSettings(VERSION);
+    void Start()
+    {
+        GameObject[] gos = GameObject.FindGameObjectsWithTag("PlayerInfo");
+        if (gos.Length == 0)
+        {
+            SceneManager.LoadScene("LoginMenu");
+        }
+        else
+            PhotonNetwork.ConnectUsingSettings(VERSION);
     }
 
     void OnJoinedLobby()
@@ -39,7 +48,7 @@ public class NetworkManager : MonoBehaviour {
         }
         int i = 0;
         int[] usedSpawns = new int[10];
-        for(i = 0; i < usedSpawns.Length; ++i)
+        for (i = 0; i < usedSpawns.Length; ++i)
         {
             usedSpawns[i] = -1;
         }
@@ -51,12 +60,12 @@ public class NetworkManager : MonoBehaviour {
             //Debug.Log(usedSpawns[i]);
             ++i;
         }
-        for(i = 0; i < usedSpawns.Length; ++i)
+        for (i = 0; i < usedSpawns.Length; ++i)
         {
             bool unavailable = false;
-            for (int j =0; j < usedSpawns.Length; ++j)
+            for (int j = 0; j < usedSpawns.Length; ++j)
             {
-                if(i == usedSpawns[j])
+                if (i == usedSpawns[j])
                 {
                     unavailable = true;
                 }
@@ -65,7 +74,7 @@ public class NetworkManager : MonoBehaviour {
                 break;
         }
         Transform t = spawnPoints[i];
-        PhotonNetwork.Instantiate(prefabName, t.position,t.rotation,0);
+        PhotonNetwork.Instantiate(prefabName, t.position, t.rotation, 0);
         ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
         h.Add("spawnPlayer" + i, i);
         PhotonNetwork.room.SetCustomProperties(h);
@@ -95,5 +104,5 @@ public class NetworkManager : MonoBehaviour {
         }
         PhotonNetwork.room.SetCustomProperties(h);
     }
-	
+
 }
