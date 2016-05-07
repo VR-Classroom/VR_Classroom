@@ -23,12 +23,26 @@ public class LoginMenuScript : MonoBehaviour
 
     private bool displayExit = false;
 
-    //private string loginurl = "http://52.38.66.127/scripts/getUser.php";
 
     private bool validLogin = false;
     private float checkRate = 1.0f;
-    //private MyWebRequest mwr = new MyWebRequest();
 
+    private Text invalidText;
+
+    void Update()
+    {
+        
+        if (username.isFocused == true)
+        {
+            //username.GetComponent<Image>().color = Color.green;
+            invalidText.enabled = false;
+        }
+        else if (pass.isFocused == true)
+        {
+            //username.GetComponent<Image>().color = Color.green;
+            invalidText.enabled = false;
+        }
+    }
 
     // Use this for initialization
     void Start()
@@ -61,17 +75,35 @@ public class LoginMenuScript : MonoBehaviour
                 p.resetInfo();
             }
         }
+
+        invalidText = GameObject.Find("Invalid").GetComponent<Text>();
+        invalidText.enabled = false;
     }
 
     public void LoginPress()
     {
+        invalidText.enabled = false;
         emailTxt = username.text.Trim();
-        passTxt = pass.text.Trim();
-        if (passTxt != "" && emailTxt != "")
+        //passTxt = pass.text.Trim();
+        //if (passTxt != "" && emailTxt != "")
+        //{
+        //    //Debug.Log("Calling waitcheck");
+        //    StartCoroutine(waitCheck());
+        //}
+        if (passTxt == "")
         {
-            //Debug.Log("Calling waitcheck");
+            invalidText.enabled = true;
+        }
+        else if (emailTxt == "")
+        {
+            invalidText.enabled = true;
+        }
+        else
+        {
             StartCoroutine(waitCheck());
         }
+
+
     }
 
 
@@ -118,18 +150,12 @@ public class LoginMenuScript : MonoBehaviour
     IEnumerator waitCheck()
     {
 
-
-        Debug.Log("Creating form!");
+        
         WWWForm form = new WWWForm();
-        //form.AddField("EMAIL", "hgarc014@ucr.edu");
-        //    form.AddField("PASS", "1234");
-
-
 
         form.AddField("EMAIL", username.text);
         form.AddField("PASS", pass.text);
 
-        
         WWW download = new WWW(RequestHelper.URL_LOGIN, form);
 
         // Wait until the download is done
@@ -144,6 +170,7 @@ public class LoginMenuScript : MonoBehaviour
             if (data == null || data.Trim() == "")
             {
                 Debug.Log("Invalid input");
+                invalidText.enabled = true;
             }
             else {
                 //string[] rows = data.Split(';');

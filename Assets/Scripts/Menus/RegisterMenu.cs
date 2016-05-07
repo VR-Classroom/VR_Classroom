@@ -35,6 +35,37 @@ public class RegisterMenu : MonoBehaviour
     private float checkRate = 1.0f;
     //private MyWebRequest mwr = new MyWebRequest();
 
+    private Text invalidText;
+
+    void Update()
+    {
+
+        if (email.isFocused == true)
+        {
+            email.GetComponent<Image>().color = Color.white;
+            invalidText.enabled = false;
+        }
+        else if (password.isFocused == true)
+        {
+            password.GetComponent<Image>().color = Color.white;
+            invalidText.enabled = false;
+        }
+        else if(password2.isFocused == true)
+        {
+            password2.GetComponent<Image>().color = Color.white;
+            invalidText.enabled = false;
+        }
+        else if (firstName.isFocused == true)
+        {
+            firstName.GetComponent<Image>().color = Color.white;
+            invalidText.enabled = false;
+        }
+        else if (lastName.isFocused == true)
+        {
+            lastName.GetComponent<Image>().color = Color.white;
+            invalidText.enabled = false;
+        }
+    }
 
     // Use this for initialization
     void Start()
@@ -51,11 +82,20 @@ public class RegisterMenu : MonoBehaviour
         gender = gender.GetComponent<Dropdown>();
         studentTeacher = studentTeacher.GetComponent<Dropdown>();
 
+        invalidText = GameObject.Find("Invalid").GetComponent<Text>();
+        invalidText.enabled = false;
+
     }
 
     public void MainMenuPress()
     {
         SceneManager.LoadScene("LoginMenu");
+    }
+
+    private void showInvalid(string text)
+    {
+        invalidText.text = text;
+        invalidText.enabled = true;
     }
 
     public void RegisterPress()
@@ -80,53 +120,59 @@ public class RegisterMenu : MonoBehaviour
             || string.IsNullOrEmpty(gen) || string.IsNullOrEmpty(priv))
         {
             Debug.Log("A field was empty");
+            showInvalid("All fields are required!");
             valid = false;
-            return;
+            //return;
         }
 
-        if (pass != pass2)
+        if (valid && pass != pass2)
         {
+            password.GetComponent<Image>().color = Color.red;
+            password2.GetComponent<Image>().color = Color.red;
+            showInvalid("Passwords do not match");
             Debug.Log("Passwords do not match");
             valid = false;
-            return;
+            //return;
         }
-        if (!emailTxt.Contains("@"))
+        if (valid && !emailTxt.Contains("@"))
         {
+            email.GetComponent<Image>().color = Color.red;
+            showInvalid("Invalid email");
             Debug.Log("Invalid email");
             valid = false;
-            return;
+            //return;
         }
 
 
-        if (gen == "Specify Gender")
-        {
-            Debug.Log("Gender not specified");
-            gen = "O";
-        }
-        else if (gen == "Male")
-        {
-            gen = "M";
-        }
-        else if (gen == "Female")
-        {
-            gen = "F";
-        }
-        else if (gen == "Other")
-        {
-            gen = "O";
-        }
-
-
-        if (priv == "Student")
-            priv = "S";
-        else if (priv == "Teacher")
-            priv = "T";
-        else
-            Debug.Log("Priv:" + priv);
 
         if (valid)
         {
-            //Debug.Log("Would have created user");
+
+            if (gen == "Specify Gender")
+            {
+                Debug.Log("Gender not specified");
+                gen = "O";
+            }
+            else if (gen == "Male")
+            {
+                gen = "M";
+            }
+            else if (gen == "Female")
+            {
+                gen = "F";
+            }
+            else if (gen == "Other")
+            {
+                gen = "O";
+            }
+
+
+            if (priv == "Student")
+                priv = "S";
+            else if (priv == "Teacher")
+                priv = "T";
+            else
+                Debug.Log("Priv:" + priv);
             StartCoroutine(waitCheck());
         }
 

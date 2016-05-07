@@ -44,9 +44,6 @@ public class ClassMenu : MonoBehaviour
     public void LogoutPress()
     {
 
-
-
-
         //GameObject t = GameObject.Find("PlayerInfo");
         ////PlayerInfo p = (PlayerInfo)t.GetComponent(typeof(PlayerInfo));
         //Object.Destroy(t);
