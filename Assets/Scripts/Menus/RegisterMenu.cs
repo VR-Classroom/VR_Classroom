@@ -29,7 +29,7 @@ public class RegisterMenu : MonoBehaviour
 
 
 
-    private string loginurl = "http://52.38.66.127/scripts/registerUser.php";
+    //private string loginurl = "http://52.38.66.127/scripts/registerUser.php";
 
     private bool validLogin = false;
     private float checkRate = 1.0f;
@@ -154,7 +154,7 @@ public class RegisterMenu : MonoBehaviour
         form.AddField("EMAIL", emailTxt);
         form.AddField("PASS", pass);
 
-        WWW download = new WWW(loginurl, form);
+        WWW download = new WWW(RequestHelper.URL_REGISTER, form);
 
         // Wait until the download is done
         yield return download;

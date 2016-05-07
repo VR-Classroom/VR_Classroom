@@ -7,14 +7,20 @@ using UnityEngine.SceneManagement;
 public class ScrollableList : MonoBehaviour
 {
     public GameObject itemPrefab;
-    public int itemCount = 10, columnCount = 1;
+    //public int itemCount = 1;
+    public int columnCount = 1;
     public Scrollbar scrollBar;
 
-    void Start()
+    
+
+    void createButtons(List<ClassInfo> classes)
     {
         RectTransform rowRectTransform = itemPrefab.GetComponent<RectTransform>();
         RectTransform containerRectTransform = gameObject.GetComponent<RectTransform>();
 
+
+        int itemCount = classes.Count;
+        
         //calculate the width and height of each child item.
         float width = containerRectTransform.rect.width / columnCount;
         float ratio = width / rowRectTransform.rect.width;
@@ -66,23 +72,106 @@ public class ScrollableList : MonoBehaviour
             //goButton.transform.localScale = new Vector3(1, 1, 1);
 
             Button tempButton = newItem.GetComponent<Button>();
+            tempButton.GetComponentInChildren<Text>().text = classes[i].courseName;
 
-            int tempInt = i;
+            //int tempInt = i;
+            string uid = classes[i].cid.ToString();
 
-            tempButton.onClick.AddListener(() => ButtonClicked(tempInt));
-            //}
 
-            //RectTransform.
+            tempButton.onClick.AddListener(() => ButtonClicked(uid));
         }
 
-        scrollBar.GetComponent<Scrollbar>().value = 1;
-
-
+        //scrollBar.GetComponent<Scrollbar>().value = 1;
     }
 
-    void ButtonClicked(int buttonNo)
+    void Start()
     {
-        Debug.Log("Button clicked = " + buttonNo);
+
+        StartCoroutine(waitCheck());
+    }
+
+    IEnumerator waitCheck()
+    {
+
+        WWWForm form = new WWWForm();
+
+        GameObject[] gos = GameObject.FindGameObjectsWithTag("PlayerInfo");
+        PlayerInfo p = (PlayerInfo)gos[0].GetComponent(typeof(PlayerInfo));
+
+
+        GameObject t = GameObject.Find("Title");
+        Text title = t.GetComponent<Text>();
+
+        form.AddField("UID", p.uid);
+
+        WWW download = new WWW(RequestHelper.URL_GET_CLASSES,form);
+        
+
+        // Wait until the download is done
+        yield return download;
+
+        if (!string.IsNullOrEmpty(download.error))
+        {
+            print("Error downloading: " + download.error);
+        }
+        else {
+            string data = download.text;
+            if (data == null || data.Trim() == "")
+            {
+                title.text = "You are not teaching any classes";
+                //Debug.Log("Invalid input");
+            }
+            else {
+                string[] rows = data.Split(';');
+                List<ClassInfo> classes = new List<ClassInfo>();
+                
+                for(int i =0; i < rows.Length; ++i)
+                {
+
+                    if (rows[i].Trim().Length > 0)
+                    {
+                        //Debug.Log("Adding " + rows[i]);
+                        classes.Add(new ClassInfo(rows[i]));
+                    }
+                }
+                if(p.privilege == "T")
+                {
+
+                    //if(classes.Count == 0 || rows.Length == 0)
+                    //{
+                    //    title.text = "You are not teaching any classes";
+                    //}
+                    //else
+                    //{
+                        title.text = "Classes you are teaching";
+                    //}
+
+                    //test.text = "I'm a teacher";
+
+                    //PlayerInfo p = (PlayerInfo)t.GetComponent(typeof(PlayerInfo));
+                }
+                createButtons(classes);
+                scrollBar.GetComponent<Scrollbar>().value = 1;
+                //Debug.Log(GetValue(rows[0], "email"));
+                //Debug.Log(download.text);
+                //GameObject t = GameObject.Find("PlayerInfo");
+                //PlayerInfo p = (PlayerInfo)t.GetComponent(typeof(PlayerInfo));
+                //p.initPlayer(data);
+                //Debug.Log("Valid User. TODO: save data before moving to new scene");
+
+                //SceneManager.LoadScene("classroom");
+                //SceneManager.LoadScene("ClassesMenu");
+            }
+        }
+    }
+
+    void ButtonClicked(string courseName)
+    {
+        GameObject[] gos = GameObject.FindGameObjectsWithTag("PlayerInfo");
+        PlayerInfo p = (PlayerInfo)gos[0].GetComponent(typeof(PlayerInfo));
+        p.setRoomName(courseName);
+        //Debug.Log("Button clicked = " + buttonNo);
+
         SceneManager.LoadScene("classroom");
     }
 

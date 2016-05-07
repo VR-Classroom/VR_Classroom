@@ -30,7 +30,7 @@ public class ColorChange : MonoBehaviour {
 
             PhotonNetwork.Disconnect();
 
-            SceneManager.LoadScene("LoginMenu");
+            SceneManager.LoadScene("ClassesMenu");
             //Application.Quit();
             //Debug.Log("exiting");
         }

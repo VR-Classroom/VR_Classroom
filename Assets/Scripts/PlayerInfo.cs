@@ -10,7 +10,13 @@ public class PlayerInfo : MonoBehaviour
     public string privilege;
     public string email;
     public string uid;
+    public string roomJoin;
 
+
+    public void setRoomName(string roomName)
+    {
+        roomJoin = roomName;
+    }
 
     public void initPlayer(string uid, string fname, string lname, string gender, string privilege, string email)
     {
@@ -32,7 +38,8 @@ public class PlayerInfo : MonoBehaviour
         //foreach(string s in fields)
         for (int i = 0; i < fields.Length; ++i)
         {
-            fieldValues[i] = GetValue(row, fields[i]);
+            
+            fieldValues[i] = RequestHelper.GetValue(row, fields[i]);
         }
 
         //Debug.Log(GetValue(rows[0], "email"));
@@ -69,12 +76,5 @@ public class PlayerInfo : MonoBehaviour
 
     }
 
-
-    string GetValue(string row, string name)
-    {
-        string value = row.Substring(row.IndexOf(name + ":") + name.Length + 1);
-        if (value.Contains("|"))
-            value = value.Remove(value.IndexOf("|"));
-        return value;
-    }
+    
 }

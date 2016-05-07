@@ -23,7 +23,7 @@ public class LoginMenuScript : MonoBehaviour
 
     private bool displayExit = false;
 
-    private string loginurl = "http://52.38.66.127/scripts/getUser.php";
+    //private string loginurl = "http://52.38.66.127/scripts/getUser.php";
 
     private bool validLogin = false;
     private float checkRate = 1.0f;
@@ -129,7 +129,8 @@ public class LoginMenuScript : MonoBehaviour
         form.AddField("EMAIL", username.text);
         form.AddField("PASS", pass.text);
 
-        WWW download = new WWW(loginurl, form);
+        
+        WWW download = new WWW(RequestHelper.URL_LOGIN, form);
 
         // Wait until the download is done
         yield return download;
@@ -151,7 +152,7 @@ public class LoginMenuScript : MonoBehaviour
                 GameObject t = GameObject.Find("PlayerInfo");
                 PlayerInfo p = (PlayerInfo)t.GetComponent(typeof(PlayerInfo));
                 p.initPlayer(data);
-                Debug.Log("Valid User. TODO: save data before moving to new scene");
+                //Debug.Log("Valid User. TODO: save data before moving to new scene");
 
                 //SceneManager.LoadScene("classroom");
                 SceneManager.LoadScene("ClassesMenu");
