@@ -10,8 +10,12 @@ public class ScrollableList : MonoBehaviour
     //public int itemCount = 1;
     public int columnCount = 1;
     public Scrollbar scrollBar;
+    public Canvas ExitMenu;
+    public Text ExitTitle;
 
-    
+    PlayerInfo p;
+    int cid = -1;
+
 
     void createButtons(List<ClassInfo> classes)
     {
@@ -20,7 +24,7 @@ public class ScrollableList : MonoBehaviour
 
 
         int itemCount = classes.Count;
-        
+
         //calculate the width and height of each child item.
         float width = containerRectTransform.rect.width / columnCount;
         float ratio = width / rowRectTransform.rect.width;
@@ -71,14 +75,41 @@ public class ScrollableList : MonoBehaviour
             //goButton.transform.SetParent(ParentPanel, false);
             //goButton.transform.localScale = new Vector3(1, 1, 1);
 
-            Button tempButton = newItem.GetComponent<Button>();
-            tempButton.GetComponentInChildren<Text>().text = classes[i].courseName;
+
+
+
+            //tempButton.GetComponentInChildren<Text>().text = classes[i].courseName;
 
             //int tempInt = i;
-            string uid = classes[i].cid.ToString();
+            //string uid = classes[i].cid.ToString();
+            ClassInfo c = classes[i];
 
+            //Transform classTr= newItem.transform.Find("ClassName");
+            Text className = newItem.transform.Find("ClassName").GetComponent<Text>();
+            className.text = c.courseName;
 
-            tempButton.onClick.AddListener(() => ButtonClicked(uid));
+            Text teacherName = newItem.transform.Find("TeacherName").GetComponent<Text>();
+            teacherName.text = c.teacherName;
+
+            Text daysTaught = newItem.transform.Find("DaysTaught").GetComponent<Text>();
+            daysTaught.text = c.daysTaught;
+
+            Button joinButton = newItem.transform.Find("Join").GetComponent<Button>();
+            joinButton.onClick.AddListener(() => JoinClick(c));
+
+            Button deleteButton = newItem.transform.Find("Delete").GetComponent<Button>();
+
+            if (p.privilege != "T")
+            {
+                //Debug.Log("Disabbling button");
+                //deleteButton.GetComponent<Image>().enabled = false;
+                //deleteButton.enabled = false;
+                deleteButton.gameObject.SetActive(false);
+            }
+            else
+            {
+                deleteButton.onClick.AddListener(() => DeleteClick(c));
+            }
         }
 
         //scrollBar.GetComponent<Scrollbar>().value = 1;
@@ -86,26 +117,26 @@ public class ScrollableList : MonoBehaviour
 
     void Start()
     {
+        GameObject[] gos = GameObject.FindGameObjectsWithTag("PlayerInfo");
+        p = (PlayerInfo)gos[0].GetComponent(typeof(PlayerInfo));
 
-        StartCoroutine(waitCheck());
+        ExitTitle = ExitTitle.GetComponent<Text>();
+        ExitMenu = ExitMenu.GetComponent<Canvas>();
+        ExitMenu.enabled = false;
+        StartCoroutine(getClassInfo());
     }
 
-    IEnumerator waitCheck()
+    IEnumerator getClassInfo()
     {
 
         WWWForm form = new WWWForm();
-
-        GameObject[] gos = GameObject.FindGameObjectsWithTag("PlayerInfo");
-        PlayerInfo p = (PlayerInfo)gos[0].GetComponent(typeof(PlayerInfo));
-
-
+        
         GameObject t = GameObject.Find("Title");
         Text title = t.GetComponent<Text>();
 
         form.AddField("UID", p.uid);
 
-        WWW download = new WWW(RequestHelper.URL_GET_CLASSES,form);
-        
+        WWW download = new WWW(RequestHelper.URL_GET_CLASSES, form);
 
         // Wait until the download is done
         yield return download;
@@ -118,14 +149,14 @@ public class ScrollableList : MonoBehaviour
             string data = download.text;
             if (data == null || data.Trim() == "")
             {
-                title.text = "You are not teaching any classes";
+                title.text = "You have no Lectures";
                 //Debug.Log("Invalid input");
             }
             else {
                 string[] rows = data.Split(';');
                 List<ClassInfo> classes = new List<ClassInfo>();
-                
-                for(int i =0; i < rows.Length; ++i)
+
+                for (int i = 0; i < rows.Length; ++i)
                 {
 
                     if (rows[i].Trim().Length > 0)
@@ -134,45 +165,67 @@ public class ScrollableList : MonoBehaviour
                         classes.Add(new ClassInfo(rows[i]));
                     }
                 }
-                if(p.privilege == "T")
+                if (p.privilege == "T")
                 {
+                    title.text = "My Lectures";
 
-                    //if(classes.Count == 0 || rows.Length == 0)
-                    //{
-                    //    title.text = "You are not teaching any classes";
-                    //}
-                    //else
-                    //{
-                        title.text = "Classes you are teaching";
-                    //}
-
-                    //test.text = "I'm a teacher";
-
-                    //PlayerInfo p = (PlayerInfo)t.GetComponent(typeof(PlayerInfo));
                 }
                 createButtons(classes);
                 scrollBar.GetComponent<Scrollbar>().value = 1;
-                //Debug.Log(GetValue(rows[0], "email"));
-                //Debug.Log(download.text);
-                //GameObject t = GameObject.Find("PlayerInfo");
-                //PlayerInfo p = (PlayerInfo)t.GetComponent(typeof(PlayerInfo));
-                //p.initPlayer(data);
-                //Debug.Log("Valid User. TODO: save data before moving to new scene");
-
-                //SceneManager.LoadScene("classroom");
-                //SceneManager.LoadScene("ClassesMenu");
             }
         }
     }
 
-    void ButtonClicked(string courseName)
+    void JoinClick(ClassInfo c)
     {
         GameObject[] gos = GameObject.FindGameObjectsWithTag("PlayerInfo");
         PlayerInfo p = (PlayerInfo)gos[0].GetComponent(typeof(PlayerInfo));
-        p.setRoomName(courseName);
+        p.setRoomName(c.courseName);
         //Debug.Log("Button clicked = " + buttonNo);
 
         SceneManager.LoadScene("classroom");
+    }
+
+    void DeleteClick(ClassInfo c)
+    {
+
+        ExitTitle.text = "Are you sure you want to delete your \"" + c.courseName + "\" course? (can't be undone)";
+        cid = c.cid;
+        ExitMenu.enabled = true;
+        //p.setRoomName(c.courseName);
+        //SceneManager.LoadScene("classroom");
+    }
+
+    public void YesClick()
+    {
+        //Debug.Log("UID:" + p.uid + "|CID:" + cid);
+        StartCoroutine(deleteClass());
+        SceneManager.LoadScene("ClassesMenu");
+    }
+
+    IEnumerator deleteClass()
+    {
+
+        WWWForm form = new WWWForm();
+
+        form.AddField("UID", p.uid);
+        form.AddField("CID", cid);
+
+        WWW download = new WWW(RequestHelper.URL_DELETE_CLASS, form);
+
+
+        // Wait until the download is done
+        yield return download;
+
+        SceneManager.LoadScene("ClassesMenu");
+
+    }
+
+
+    public void NoClick()
+    {
+        cid = -1;
+        ExitMenu.enabled = false;
     }
 
 }

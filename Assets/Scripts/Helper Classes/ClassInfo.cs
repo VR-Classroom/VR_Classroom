@@ -9,6 +9,8 @@ public class ClassInfo  {
     public string endDate;
     public string daysTaught;
     public int maxEnrolled;
+    public string teacherName;
+
 
     public ClassInfo(string row)
     {
@@ -17,7 +19,8 @@ public class ClassInfo  {
         startDate= RequestHelper.GetValue(row, "startDate");
         endDate = RequestHelper.GetValue(row, "endDate");
         daysTaught = RequestHelper.GetValue(row, "daysTaught");
-        maxEnrolled = int.Parse(RequestHelper.GetValue(row, "maxEnrolled"));
+        //maxEnrolled = int.Parse(RequestHelper.GetValue(row, "maxEnrolled"));
+        teacherName = RequestHelper.GetValue(row, "firstName") + " " + RequestHelper.GetValue(row, "lastName");
     }
 
 	// Use this for initialization
