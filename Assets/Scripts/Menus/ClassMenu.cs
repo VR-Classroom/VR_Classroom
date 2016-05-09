@@ -5,12 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class ClassMenu : MonoBehaviour
 {
+    public Canvas createClassMenu;
+    public Button createClass;
 
-
-
-    //public GameObject prefabButton;
-    //public RectTransform ParentPanel;
-
+    public Button cancel;
+    PlayerInfo p;
 
     // Use this for initialization
     void Start()
@@ -20,19 +19,19 @@ public class ClassMenu : MonoBehaviour
         {
             SceneManager.LoadScene("LoginMenu");
         }
-        //for (int i = 0; i < 20; i++)
-        //{
-        //    GameObject goButton = (GameObject)Instantiate(prefabButton);
-        //    goButton.transform.SetParent(ParentPanel, false);
-        //    goButton.transform.localScale = new Vector3(1, 1, 1);
 
-        //    Button tempButton = goButton.GetComponent<Button>();
+        p = (PlayerInfo)gos[0].GetComponent(typeof(PlayerInfo));
 
-        //    int tempInt = i;
+        createClassMenu = createClassMenu.GetComponent<Canvas>();
+        createClassMenu.enabled = false;
 
-        //    tempButton.onClick.AddListener(() => ButtonClicked(tempInt));
-        //}
+        createClass = createClass.GetComponent<Button>();
 
+        if (p.privilege != "T")
+            createClass.gameObject.SetActive(false);
+
+        cancel = cancel.GetComponent<Button>();
+        cancel.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -43,23 +42,22 @@ public class ClassMenu : MonoBehaviour
 
     public void LogoutPress()
     {
-
-        //GameObject t = GameObject.Find("PlayerInfo");
-        ////PlayerInfo p = (PlayerInfo)t.GetComponent(typeof(PlayerInfo));
-        //Object.Destroy(t);
-        ////p.resetInfo();
         SceneManager.LoadScene("LoginMenu");
     }
 
-    public void ClassPress()
+    public void CreateNewClassPress()
     {
-        SceneManager.LoadScene("classroom");
+        createClassMenu.enabled = true;
+        createClass.gameObject.SetActive(false);
+        cancel.gameObject.SetActive(true);
     }
 
 
-
-    void ButtonClicked(int buttonNo)
+    public void cancelCreate()
     {
-        Debug.Log("Button clicked = " + buttonNo);
+        createClassMenu.enabled = false;
+        createClass.gameObject.SetActive(true);
+        cancel.gameObject.SetActive(false);
     }
+
 }
