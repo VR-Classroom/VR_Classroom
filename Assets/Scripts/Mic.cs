@@ -11,11 +11,21 @@ public class Mic : MonoBehaviour {
 	AudioClip c;
 	string fileName = "";
 	bool Recording = true;
-	public float timestamp;
+
+	public float uploadTimestamp;
 	public float interval = 2.0F;
+
+	public int audioFragmentNum = 0;
+	public int mostRecentFragment = 0;
+	public int mostRecentUpload = 0;
+	int playIndex = 0;
+	int channels = 0;
+
+	AudioClip[] fragments;
 
 	void Start() {
 		audio = GetComponent<AudioSource> ();
+		fragments = new AudioClip[20];
 
 		//var teacher = new WWW (); //check if there is already someone recording
 
@@ -26,85 +36,74 @@ public class Mic : MonoBehaviour {
 			while (!(Microphone.GetPosition (null) > 0)) {}
 		}
 
-		timestamp = Time.time;
-
 		/*
+		uploadTimestamp = Time.time;
 
-		float[] sample = new float[1];
-		sample [0] = 0.5F;
+		var w = new WWW ("http://52.38.66.127/voiceData/zzz2");
 
-		byte[] data = ToByte(sample);
-		fileName = "V";
-
-		WWWForm form = new WWWForm ();
-		form.AddBinaryData ("file", data, fileName);
-
-		WWW w = new WWW ("http://52.38.66.127/scripts/voiceUpload.php", form);
-		*/
-
-		/*
-		var w = new WWW ("http://52.38.66.127/voiceData/sample.mp3");
-
-		while (w.progress < 0.08) {
+		while (!w.isDone) {
 			//yield WaitForSeconds (0.1);
 		}
 
-		var a = w.GetAudioClip(false, true, AudioType.MPEG);
-		audio.clip = a;
-		audio.Play ();
+		float[] audioArray = ToFloat (w.bytes);
+		AudioClip clip = AudioClip.Create("frag", audioArray.Length, 1, 44100, false, false);
+		AudioSource.PlayClipAtPoint (clip, new Vector3(100, 100, 0), 1.0f);
 		*/
 	}
 
-
 	void Update () {
-		if (timestamp < Time.time) {
+		if (uploadTimestamp < Time.time) {
 			if (!Recording) {
 				//if you are not recording you should download audio and queue it
 				;
 			} else {
-				float[] sample = new float[1];
-				sample [0] = 0.5F;
-
-				byte[] data = ToByte(sample);
-				fileName = "V";
-
-				WWWForm form = new WWWForm ();
-				form.AddBinaryData ("file", data, fileName);
-
-				WWW w = new WWW ("http://52.38.66.127/scripts/voiceUpload.php", form);
-				/*
 				int pos = Microphone.GetPosition (null);
 				int diff = pos - lastSample;
 
 				if (diff > 0) {
-					float[] samples = new float[diff * audio.clip.channels];
-					audio.clip.GetData (samples, lastSample);
+					float[] samples = new float[diff * c.channels];
+					c.GetData (samples, lastSample);
 					byte[] data = ToByte (samples);
-					//Send (data);
 
-					fileName = timestamp.ToString();
+					fileName = uploadTimestamp.ToString ();
 
-					WWWForm form = new WWWForm ();
+					StartCoroutine (Send (data));
 
-					//form.AddField ("action", "voice upload");
-
-					form.AddBinaryData ("file", data, fileName);
-
-					WWW w = new WWW ("http://52.38.66.127/scripts/voiceUpload.php", form);
-
-					//WWW w = new WWW ("http://52.38.66.127/scripts/voiceUpload.php");
+					samples = ToFloat (data);
+					AudioClip clip = AudioClip.Create ("frag", data.Length, 1, 44100, false);
+					clip.SetData (samples, 0);
+					audio.clip = clip;
+					audio.Play ();
 
 					lastSample = pos;
 				}
-				*/
 			}
-			timestamp += interval;
+			uploadTimestamp += interval;
+		} /* else if (!Recording) {
+			if (!audio.isPlaying && fragments [playIndex] != null) {
+				audio.clip = fragments[playIndex];
+				audio.Play ();
+			}
+			WWW mostRecentUploadReq = new WWW("http://52.38.66.127/scripts/getMostRecent.php");
+			var mostRecentUpload = int.Parse (mostRecentUploadReq.text);
+
+			if(mostRecentFragment < mostRecentUpload) {
+				if (mostRecentUpload - mostRecentFragment > 20) {
+					mostRecentFragment = mostRecentUpload - 15;
+				}
+
+				for (int i = mostRecentFragment; i < mostRecentUpload; i++) {
+					WWW fragment = new WWW ("http://52.38.66.127/voiceData/zzz" + i.ToString());
+					float[] audioArray = ToFloat (fragment.bytes);
+					fragments[i] = AudioClip.Create("frag", audioArray.Length, 1, 44100, false, false);
+					fragments [i].SetData (audioArray, 0);
+				}
+			}
 		}
+		*/
 	}
 
 	IEnumerator Send(byte[] data) {
-		fileName = "V";
-
 		WWWForm form = new WWWForm ();
 		//form.AddField ("voice", data);
 
@@ -142,8 +141,8 @@ public class Mic : MonoBehaviour {
 
 	public float[] ToFloat(byte[] data) {
 		float[] returnArray = new float[data.Length / 4];
-		for (int i = 0; i < returnArray.Length; i += 4) {
-			returnArray[i] = System.BitConverter.ToSingle(data, i);
+		for (int i = 0; i < data.Length; i += 4) {
+			returnArray[i/4] = System.BitConverter.ToSingle(data, i);
 		}
 
 		return returnArray;
