@@ -11,6 +11,8 @@ public class Mic : MonoBehaviour {
 	AudioClip c;
 	string fileName = "";
 	bool Recording = true;
+	public float timestamp;
+	public float interval = 2.0F;
 
 	void Start() {
 		audio = GetComponent<AudioSource> ();
@@ -24,6 +26,10 @@ public class Mic : MonoBehaviour {
 			while (!(Microphone.GetPosition (null) > 0)) {}
 		}
 
+		timestamp = Time.time;
+
+		/*
+
 		float[] sample = new float[1];
 		sample [0] = 0.5F;
 
@@ -34,6 +40,7 @@ public class Mic : MonoBehaviour {
 		form.AddBinaryData ("file", data, fileName);
 
 		WWW w = new WWW ("http://52.38.66.127/scripts/voiceUpload.php", form);
+		*/
 
 		/*
 		var w = new WWW ("http://52.38.66.127/voiceData/sample.mp3");
@@ -50,37 +57,49 @@ public class Mic : MonoBehaviour {
 
 
 	void Update () {
-		
+		if (timestamp < Time.time) {
+			if (!Recording) {
+				//if you are not recording you should download audio and queue it
+				;
+			} else {
+				float[] sample = new float[1];
+				sample [0] = 0.5F;
 
-		/*
-		if (!Recording) {
-			//if you are not recording you should download audio and queue it
-			;
-		} else {
-			int pos = Microphone.GetPosition (null);
-			int diff = pos - lastSample;
-
-			if (diff > 0) {
-				float[] samples = new float[diff * audio.clip.channels];
-				audio.clip.GetData (samples, lastSample);
-				byte[] data = ToByte (samples);
-				//Send (data);
-
+				byte[] data = ToByte(sample);
 				fileName = "V";
 
 				WWWForm form = new WWWForm ();
-
-				//form.AddField ("action", "voice upload");
-
 				form.AddBinaryData ("file", data, fileName);
 
 				WWW w = new WWW ("http://52.38.66.127/scripts/voiceUpload.php", form);
+				/*
+				int pos = Microphone.GetPosition (null);
+				int diff = pos - lastSample;
 
-				//WWW w = new WWW ("http://52.38.66.127/scripts/voiceUpload.php");
+				if (diff > 0) {
+					float[] samples = new float[diff * audio.clip.channels];
+					audio.clip.GetData (samples, lastSample);
+					byte[] data = ToByte (samples);
+					//Send (data);
+
+					fileName = timestamp.ToString();
+
+					WWWForm form = new WWWForm ();
+
+					//form.AddField ("action", "voice upload");
+
+					form.AddBinaryData ("file", data, fileName);
+
+					WWW w = new WWW ("http://52.38.66.127/scripts/voiceUpload.php", form);
+
+					//WWW w = new WWW ("http://52.38.66.127/scripts/voiceUpload.php");
+
+					lastSample = pos;
+				}
+				*/
 			}
-			lastSample = pos;
+			timestamp += interval;
 		}
-		*/
 	}
 
 	IEnumerator Send(byte[] data) {
