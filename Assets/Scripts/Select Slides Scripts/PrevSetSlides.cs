@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.SceneManagement;
 
-public class SetSlides : MonoBehaviour
+public class PrevSetSlides : MonoBehaviour
 {
 
     bool hitbyraycast = false;
@@ -24,18 +24,7 @@ public class SetSlides : MonoBehaviour
     {
         if (hitbyraycast && Input.GetKey(KeyCode.Mouse0))
         {
-            ExitGames.Client.Photon.Hashtable tmp = PhotonNetwork.player.customProperties;
-            int i = (int)(tmp["myspawn"]);
-            ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
-            h.Add("spawnPlayer" + i, -1);
-            PhotonNetwork.room.SetCustomProperties(h);
-            PhotonNetwork.DestroyPlayerObjects(PhotonNetwork.player);
 
-            PhotonNetwork.Disconnect();
-
-            SceneManager.LoadScene("SelectSildes");
-            //Application.Quit();
-            //Debug.Log("exiting");
         }
 
         if (hitbyraycast)

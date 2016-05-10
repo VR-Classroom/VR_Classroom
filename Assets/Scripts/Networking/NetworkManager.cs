@@ -8,10 +8,10 @@ public class NetworkManager : MonoBehaviour
     const string VERSION = "v0.0.6";
     public string roomName = "TEST";
     public string prefabName = "User";
-    private bool startCheck = false;
     public Transform[] spawnPoints;
     [SerializeField]
     public Transform TeacherspawnPoints;
+    int numPlayers;
 
 
     void Start()
@@ -31,6 +31,7 @@ public class NetworkManager : MonoBehaviour
     void startConnection(string room)
     {
         roomName = room;
+        numPlayers = PhotonNetwork.playerList.Length;
         PhotonNetwork.ConnectUsingSettings(VERSION);
     }
 
@@ -43,7 +44,6 @@ public class NetworkManager : MonoBehaviour
 
     void OnJoinedRoom()
     {
-        startCheck = true;
         //TODO: figure out how to spawn players in order not randomly
         GameObject SceenCamera = GameObject.Find("SceenCamera");
         if (SceenCamera != null && SceenCamera.activeSelf)
@@ -66,16 +66,19 @@ public class NetworkManager : MonoBehaviour
         }
         ExitGames.Client.Photon.Hashtable tmp = PhotonNetwork.room.customProperties;
         i = 0;
-        foreach (string name in tmp.Keys)
+        int j = 0;
+        foreach (var player in PhotonNetwork.playerList)
         {
-            usedSpawns[i] = ((int)(tmp[name]));
-            //Debug.Log(usedSpawns[i]);
-            ++i;
+            if (player.customProperties["myspawn"] != null)
+            {
+                j = (int)player.customProperties["myspawn"];
+                usedSpawns[j] = j;
+            }
         }
         for (i = 0; i < usedSpawns.Length; ++i)
         {
             bool unavailable = false;
-            for (int j = 0; j < usedSpawns.Length; ++j)
+            for (j = 0; j < usedSpawns.Length; ++j)
             {
                 if (i == usedSpawns[j])
                 {
@@ -97,7 +100,7 @@ public class NetworkManager : MonoBehaviour
 
     void Update()
     {
-        if (startCheck)
+        if (numPlayers != PhotonNetwork.playerList.Length)
         {
             int i = 0;
             int[] usedSpawns = new int[8];
@@ -108,8 +111,11 @@ public class NetworkManager : MonoBehaviour
             int j = 0;
             foreach (var player in PhotonNetwork.playerList)
             {
-                j = (int)player.customProperties["myspawn"];
-                usedSpawns[j] = j;
+                if (player.customProperties["myspawn"] != null)
+                {
+                    j = (int)player.customProperties["myspawn"];
+                    usedSpawns[j] = j;
+                }
             }
             ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
             for (i = 0; i < usedSpawns.Length; ++i)
@@ -117,6 +123,7 @@ public class NetworkManager : MonoBehaviour
                 h.Add("spawnPlayer" + i, usedSpawns[i]);
             }
             PhotonNetwork.room.SetCustomProperties(h);
+            numPlayers = PhotonNetwork.playerList.Length;
         }
     }
 
