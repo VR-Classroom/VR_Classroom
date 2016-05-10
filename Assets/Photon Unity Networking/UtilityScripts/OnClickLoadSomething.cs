@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// This component makes it easy to switch scenes or open webpages on click.
@@ -22,7 +21,7 @@ public class OnClickLoadSomething : MonoBehaviour
         switch (ResourceTypeToLoad)
         {
             case ResourceTypeOption.Scene:
-                SceneManager.LoadScene(ResourceToLoad);
+                Application.LoadLevel(ResourceToLoad);
                 break;
             case ResourceTypeOption.Web:
                 Application.OpenURL(ResourceToLoad);

@@ -78,7 +78,7 @@ PluginImporter:
         CPU: AnyCPU
         DontProcess: False
         PlaceholderPath: 
-        SDK: AnySDK
+        SDK: UWP
         ScriptingBackend: Il2Cpp
     iOS:
       enabled: 1

@@ -6,6 +6,7 @@ using UnityEngine;
 /// </summary>
 public class InputToEvent : MonoBehaviour
 {
+
     private GameObject lastGo;
     public static Vector3 inputHitPos;
     public bool DetectPointedAtGameObject;
@@ -19,95 +20,91 @@ public class InputToEvent : MonoBehaviour
 
     public Vector2 DragVector
     {
-        get { return this.Dragging ? this.currentPos - this.pressedPosition : Vector2.zero; }
+        get { return this.Dragging ? this.currentPos - pressedPosition : Vector2.zero; }
     }
 
-    private void Start()
+    void Start()
     {
-        this.m_Camera = GetComponent<Camera>();
+        m_Camera = GetComponent<Camera>();
     }
 
     // Update is called once per frame
-    private void Update()
+    void Update()
     {
-        if (this.DetectPointedAtGameObject)
+        if( DetectPointedAtGameObject )
         {
-            goPointedAt = RaycastObject(Input.mousePosition);
+            goPointedAt = RaycastObject( Input.mousePosition );
         }
 
-        if (Input.touchCount > 0)
+        if( Input.touchCount > 0 )
         {
-            Touch touch = Input.GetTouch(0);
+            Touch touch = Input.GetTouch( 0 );
             this.currentPos = touch.position;
 
-            if (touch.phase == TouchPhase.Began)
+            if( touch.phase == TouchPhase.Began )
             {
-                Press(touch.position);
+                Press( touch.position );
             }
-            else if (touch.phase == TouchPhase.Ended)
+            else if( touch.phase == TouchPhase.Ended )
             {
-                Release(touch.position);
+                Release( touch.position );
             }
 
             return;
         }
 
-        this.currentPos = Input.mousePosition;
-        if (Input.GetMouseButtonDown(0))
+        currentPos = Input.mousePosition;
+        if( Input.GetMouseButtonDown( 0 ) )
         {
-            Press(Input.mousePosition);
+            Press( Input.mousePosition );
         }
-        if (Input.GetMouseButtonUp(0))
+        if( Input.GetMouseButtonUp( 0 ) )
         {
-            Release(Input.mousePosition);
+            Release( Input.mousePosition );
         }
 
-        if (Input.GetMouseButtonDown(1))
+        if( Input.GetMouseButtonDown( 1 ) )
         {
-            this.pressedPosition = Input.mousePosition;
-            this.lastGo = RaycastObject(this.pressedPosition);
-            if (this.lastGo != null)
+            pressedPosition = Input.mousePosition;
+            lastGo = RaycastObject( pressedPosition );
+            if( lastGo != null )
             {
-                this.lastGo.SendMessage("OnPressRight", SendMessageOptions.DontRequireReceiver);
+                lastGo.SendMessage( "OnPressRight", SendMessageOptions.DontRequireReceiver );
             }
         }
     }
 
 
-    private void Press(Vector2 screenPos)
+    private void Press( Vector2 screenPos )
     {
-        this.pressedPosition = screenPos;
+        pressedPosition = screenPos;
         this.Dragging = true;
 
-        this.lastGo = RaycastObject(screenPos);
-        if (this.lastGo != null)
+        lastGo = RaycastObject( screenPos );
+        if( lastGo != null )
         {
-            this.lastGo.SendMessage("OnPress", SendMessageOptions.DontRequireReceiver);
+            lastGo.SendMessage( "OnPress", SendMessageOptions.DontRequireReceiver );
         }
     }
 
-    private void Release(Vector2 screenPos)
+    private void Release( Vector2 screenPos )
     {
-        if (this.lastGo != null)
+        if( lastGo != null )
         {
-            GameObject currentGo = RaycastObject(screenPos);
-            if (currentGo == this.lastGo)
-            {
-                this.lastGo.SendMessage("OnClick", SendMessageOptions.DontRequireReceiver);
-            }
-
-            this.lastGo.SendMessage("OnRelease", SendMessageOptions.DontRequireReceiver);
-            this.lastGo = null;
+            GameObject currentGo = RaycastObject( screenPos );
+            if( currentGo == lastGo ) lastGo.SendMessage( "OnClick", SendMessageOptions.DontRequireReceiver );
+            lastGo.SendMessage( "OnRelease", SendMessageOptions.DontRequireReceiver );
+            lastGo = null;
         }
 
-        this.pressedPosition = Vector2.zero;
+        pressedPosition = Vector2.zero;
         this.Dragging = false;
     }
 
-    private GameObject RaycastObject(Vector2 screenPos)
+    private GameObject RaycastObject( Vector2 screenPos )
     {
         RaycastHit info;
-        if (Physics.Raycast(this.m_Camera.ScreenPointToRay(screenPos), out info, 200))
+        if( Physics.Raycast( m_Camera.ScreenPointToRay( screenPos ), out info, 200 ) )
         {
             inputHitPos = info.point;
             return info.collider.gameObject;

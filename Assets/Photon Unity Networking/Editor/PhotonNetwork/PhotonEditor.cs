@@ -8,6 +8,8 @@
 // <author>developer@exitgames.com</author>
 // ----------------------------------------------------------------------------
 
+#define PHOTON_VOICE
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -81,6 +83,10 @@ public class PunWizardText
 [InitializeOnLoad]
 public class PhotonEditor : EditorWindow
 {
+#if PHOTON_VOICE
+    private const string AccountServiceType = "voice";
+#endif
+
     protected static Type WindowType = typeof (PhotonEditor);
 
     protected Vector2 scrollPos = Vector2.zero;
@@ -558,13 +564,17 @@ public class PhotonEditor : EditorWindow
     {
         EditorUtility.DisplayProgressBar(CurrentLang.ConnectionTitle, CurrentLang.ConnectionInfo, 0.5f);
         var client = new AccountService();
-        client.RegisterByEmail(email, RegisterOrigin); // this is the synchronous variant using the static RegisterOrigin. "result" is in the client
+        client.RegisterByEmail(email, RegisterOrigin, AccountServiceType); // this is the synchronous variant using the static RegisterOrigin. "result" is in the client
+//PHOTON_VOICE
 
         EditorUtility.ClearProgressBar();
         if (client.ReturnCode == 0)
         {
             this.mailOrAppId = client.AppId;
             PhotonNetwork.PhotonServerSettings.UseCloud(this.mailOrAppId, 0);
+#if PHOTON_VOICE
+            PhotonNetwork.PhotonServerSettings.VoiceAppID = client.AppId2;
+#endif
             PhotonEditor.SaveSettings();
 
             this.photonSetupState = PhotonSetupStates.GoEditPhotonServerSettings;

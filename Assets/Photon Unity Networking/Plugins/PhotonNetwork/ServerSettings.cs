@@ -3,6 +3,7 @@
 /// <summary>ScriptableObject defining a server setup. An instance is created as <b>PhotonServerSettings</b>.</summary>
 #pragma warning restore 1587
 
+#define PHOTON_VOICE
 
 using System;
 using System.Collections.Generic;
@@ -64,6 +65,9 @@ public class ServerSettings : ScriptableObject
     public int ServerPort = 5055;
 
     public string AppID = "";
+#if PHOTON_VOICE
+    public string VoiceAppID = "";
+#endif
     public CloudRegionCode PreferredRegion;
     public CloudRegionFlag EnabledRegions = (CloudRegionFlag)(-1);
 

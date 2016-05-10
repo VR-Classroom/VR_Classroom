@@ -10,6 +10,9 @@
 // ----------------------------------------------------------------------------
 
 #if UNITY_EDITOR
+
+#define PHOTON_VOICE
+
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 
@@ -32,6 +35,9 @@ public class AccountService
     protected internal Exception Exception { get; set; } // exceptions in account-server communication
 
     public string AppId { get; private set; }
+#if PHOTON_VOICE
+    public string AppId2 { get; private set; }
+#endif
 
     public int ReturnCode { get; private set; } // 0 = OK. anything else is a error with Message
 
@@ -57,17 +63,22 @@ public class AccountService
     /// </summary>
     /// <param name="email">Email of the account.</param>
     /// <param name="origin">Marks which channel created the new account (if it's new).</param>
-    public void RegisterByEmail(string email, Origin origin)
+    public void RegisterByEmail(string email, Origin origin, string serviceType)
+//PHOTON_VOICE
     {
         this.registrationCallback = null;
         this.AppId = string.Empty;
+#if PHOTON_VOICE
+        this.AppId2 = string.Empty;
+#endif
         this.Message = string.Empty;
         this.ReturnCode = -1;
 
         string result;
         try
         {
-            WebRequest req = HttpWebRequest.Create(this.RegistrationUri(email, (byte)origin));
+            WebRequest req = HttpWebRequest.Create(this.RegistrationUri(email, (byte)origin, serviceType));
+//PHOTON_VOICE
             HttpWebResponse resp = req.GetResponse() as HttpWebResponse;
 
             // now read result
@@ -90,17 +101,23 @@ public class AccountService
     /// </summary>
     /// <param name="email">Email of the account.</param>
     /// <param name="origin">Marks which channel created the new account (if it's new).</param>
+#if PHOTON_VOICE
+    /// <param name="serviceType">Service type.</param>
+#endif
     /// <param name="callback">Called when the result is available.</param>
-    public void RegisterByEmailAsync(string email, Origin origin, Action<AccountService> callback = null)
+    public void RegisterByEmailAsync(string email, Origin origin, string serviceType, Action<AccountService> callback = null)
+//PHOTON_VOICE
     {
         this.registrationCallback = callback;
         this.AppId = string.Empty;
+        this.AppId2 = string.Empty;
         this.Message = string.Empty;
         this.ReturnCode = -1;
 
         try
         {
-            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(this.RegistrationUri(email, (byte)origin));
+            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(this.RegistrationUri(email, (byte)origin, serviceType));
+//PHOTON_VOICE
             req.Timeout = 5000;
             req.BeginGetResponse(this.OnRegisterByEmailCompleted, req);
         }
@@ -159,10 +176,12 @@ public class AccountService
     /// <param name="email">Email of the account.</param>
     /// <param name="origin">1 = server-web, 2 = cloud-web, 3 = PUN, 4 = playmaker</param>
     /// <returns>Uri to call.</returns>
-    private Uri RegistrationUri(string email, byte origin)
+    private Uri RegistrationUri(string email, byte origin, string serviceType)
+//PHOTON_VOICE
     {
         string emailEncoded = Uri.EscapeDataString(email);
-        string uriString = string.Format("{0}?email={1}&origin={2}", ServiceUrl, emailEncoded, origin);
+        string uriString = string.Format("{0}?email={1}&origin={2}&serviceType={3}", ServiceUrl, emailEncoded, origin, serviceType);
+//PHOTON_VOICE
 
         return new Uri(uriString);
     }
@@ -189,9 +208,14 @@ public class AccountService
         int returnCodeInt = -1;
         string returnCodeString = string.Empty;
         string message;
-
+#if PHOTON_VOICE
+        string messageDetailed;
+#endif
         values.TryGetValue("ReturnCode", out returnCodeString);
         values.TryGetValue("Message", out message);
+#if PHOTON_VOICE
+        values.TryGetValue("MessageDetailed", out messageDetailed);
+#endif
         int.TryParse(returnCodeString, out returnCodeInt);
 
         this.ReturnCode = returnCodeInt;
@@ -199,11 +223,17 @@ public class AccountService
         {
             // returnCode == 0 means: all ok. message is new AppId
             this.AppId = message;
+#if PHOTON_VOICE
+            this.AppId2 = messageDetailed;
+#endif
         }
         else
         {
             // any error gives returnCode != 0
             this.AppId = string.Empty;
+#if PHOTON_VOICE
+            this.AppId2 = string.Empty;
+#endif
             this.Message = message;
         }
     }

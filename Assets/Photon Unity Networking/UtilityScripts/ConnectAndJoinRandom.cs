@@ -29,7 +29,7 @@ public class ConnectAndJoinRandom : Photon.MonoBehaviour
             Debug.Log("Update() was called by Unity. Scene is loaded. Let's connect to the Photon Master Server. Calling: PhotonNetwork.ConnectUsingSettings();");
 
             ConnectInUpdate = false;
-            PhotonNetwork.ConnectUsingSettings(Version + "." + SceneManagerHelper.ActiveSceneBuildIndex);
+            PhotonNetwork.ConnectUsingSettings(Version + "."+Application.loadedLevel);
         }
     }
 
@@ -37,7 +37,7 @@ public class ConnectAndJoinRandom : Photon.MonoBehaviour
     // below, we implement some callbacks of PUN
     // you can find PUN's callbacks in the class PunBehaviour or in enum PhotonNetworkingMessage
 
-
+    
     public virtual void OnConnectedToMaster()
     {
         Debug.Log("OnConnectedToMaster() was called by PUN. Now this client is connected and could join a room. Calling: PhotonNetwork.JoinRandomRoom();");
