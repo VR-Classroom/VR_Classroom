@@ -69,20 +69,48 @@ public class NetworkManager : MonoBehaviour
                 Debug.Log("SceenCamera null");
             }
         }
-        int i = 0;
-        int[] usedSpawns = new int[10];
-        for (i = 0; i < usedSpawns.Length; ++i)
+        if (p.privilege == "T")
         {
-            usedSpawns[i] = -1;
+            ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+            h.Add("spawnTeacher", 0);
+            Transform t = TeacherspawnPoints;
+
+
+            GameObject myplayer = PhotonNetwork.Instantiate(prefabName, t.position, t.rotation, 0);
+            if (myplayer)
+            {
+
+                ExitGames.Client.Photon.Hashtable canTalk = new ExitGames.Client.Photon.Hashtable();
+                canTalk.Add(p.uid, p.canTalk);
+                PhotonNetwork.room.SetCustomProperties(canTalk);
+
+
+                myplayer.GetComponent<PlayerInfo>().uid = p.uid;
+                myplayer.GetComponent<PlayerInfo>().canTalk = p.canTalk;
+                myplayer.GetComponent<PlayerInfo>().fname = p.fname;
+                CharacterInstantiated(myplayer);
+            }
+            PhotonNetwork.room.SetCustomProperties(h);
+            ExitGames.Client.Photon.Hashtable playeraAdd = new ExitGames.Client.Photon.Hashtable();
+            playeraAdd.Add("myspawn", "teacher");
+            PhotonNetwork.player.SetCustomProperties(playeraAdd);
         }
-        ExitGames.Client.Photon.Hashtable tmp = PhotonNetwork.room.customProperties;
-        i = 0;
-        int j = 0;
-        foreach (var player in PhotonNetwork.playerList)
+        else
         {
-            //<<<<<<< HEAD
-            //if (name.Contains("spawnPlayer"))
-            //{
+            int i = 0;
+            int[] usedSpawns = new int[10];
+            for (i = 0; i < usedSpawns.Length; ++i)
+            {
+                usedSpawns[i] = -1;
+            }
+            ExitGames.Client.Photon.Hashtable tmp = PhotonNetwork.room.customProperties;
+            i = 0;
+            int j = 0;
+            foreach (var player in PhotonNetwork.playerList)
+            {
+                //<<<<<<< HEAD
+                //if (name.Contains("spawnPlayer"))
+                //{
                 //Debug.Log(name);
                 //usedSpawns[i] = ((int)(tmp[name]));
                 //Debug.Log(usedSpawns[i]);
@@ -94,44 +122,45 @@ public class NetworkManager : MonoBehaviour
                     usedSpawns[j] = j;
                     //>>>>>>> development
                 }
-            //}
-        }
-        for (i = 0; i < usedSpawns.Length; ++i)
-        {
-            bool unavailable = false;
-            for (j = 0; j < usedSpawns.Length; ++j)
-            {
-                if (i == usedSpawns[j])
-                {
-                    unavailable = true;
-                }
+                //}
             }
-            if (!unavailable)
-                break;
+            for (i = 0; i < usedSpawns.Length; ++i)
+            {
+                bool unavailable = false;
+                for (j = 0; j < usedSpawns.Length; ++j)
+                {
+                    if (i == usedSpawns[j])
+                    {
+                        unavailable = true;
+                    }
+                }
+                if (!unavailable)
+                    break;
+            }
+            Transform t = spawnPoints[i];
+
+
+            GameObject myplayer = PhotonNetwork.Instantiate(prefabName, t.position, t.rotation, 0);
+            if (myplayer)
+            {
+
+                ExitGames.Client.Photon.Hashtable canTalk = new ExitGames.Client.Photon.Hashtable();
+                canTalk.Add(p.uid, p.canTalk);
+                PhotonNetwork.room.SetCustomProperties(canTalk);
+
+
+                myplayer.GetComponent<PlayerInfo>().uid = p.uid;
+                myplayer.GetComponent<PlayerInfo>().canTalk = p.canTalk;
+                myplayer.GetComponent<PlayerInfo>().fname = p.fname;
+                CharacterInstantiated(myplayer);
+            }
+            ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+            h.Add("spawnPlayer" + i, i);
+            PhotonNetwork.room.SetCustomProperties(h);
+            ExitGames.Client.Photon.Hashtable playeraAdd = new ExitGames.Client.Photon.Hashtable();
+            playeraAdd.Add("myspawn", i);
+            PhotonNetwork.player.SetCustomProperties(playeraAdd);
         }
-        Transform t = spawnPoints[i];
-
-
-        GameObject myplayer = PhotonNetwork.Instantiate(prefabName, t.position, t.rotation, 0);
-        if (myplayer)
-        {
-
-            ExitGames.Client.Photon.Hashtable canTalk = new ExitGames.Client.Photon.Hashtable();
-            canTalk.Add(p.uid, p.canTalk);
-            PhotonNetwork.room.SetCustomProperties(canTalk);
-
-
-            myplayer.GetComponent<PlayerInfo>().uid = p.uid;
-            myplayer.GetComponent<PlayerInfo>().canTalk = p.canTalk;
-            myplayer.GetComponent<PlayerInfo>().fname = p.fname;
-            CharacterInstantiated(myplayer);
-        }
-        ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
-        h.Add("spawnPlayer" + i, i);
-        PhotonNetwork.room.SetCustomProperties(h);
-        ExitGames.Client.Photon.Hashtable playeraAdd = new ExitGames.Client.Photon.Hashtable();
-        playeraAdd.Add("myspawn", i);
-        PhotonNetwork.player.SetCustomProperties(playeraAdd);
     }
 
     void Update()
@@ -147,7 +176,7 @@ public class NetworkManager : MonoBehaviour
             int j = 0;
             foreach (var player in PhotonNetwork.playerList)
             {
-                if (player.customProperties["myspawn"] != null)
+                if (player.customProperties["myspawn"] != null || (string)player.customProperties["myspawn"] != "teacher")
                 {
                     j = (int)player.customProperties["myspawn"];
                     usedSpawns[j] = j;
