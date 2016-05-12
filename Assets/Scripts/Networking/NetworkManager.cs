@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class NetworkManager : MonoBehaviour
 {
 
-    const string VERSION = "v0.0.7";
+    const string VERSION = "v0.0.8";
     public string roomName = "TEST";
     public string prefabName = "User";
     public Transform[] spawnPoints;
