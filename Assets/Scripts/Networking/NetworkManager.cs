@@ -92,7 +92,7 @@ public class NetworkManager : MonoBehaviour
             }
             PhotonNetwork.room.SetCustomProperties(h);
             ExitGames.Client.Photon.Hashtable playeraAdd = new ExitGames.Client.Photon.Hashtable();
-            playeraAdd.Add("myspawn", "teacher");
+            playeraAdd.Add("myspawn", 100);
             PhotonNetwork.player.SetCustomProperties(playeraAdd);
         }
         else
@@ -108,21 +108,12 @@ public class NetworkManager : MonoBehaviour
             int j = 0;
             foreach (var player in PhotonNetwork.playerList)
             {
-                //<<<<<<< HEAD
-                //if (name.Contains("spawnPlayer"))
-                //{
-                //Debug.Log(name);
-                //usedSpawns[i] = ((int)(tmp[name]));
-                //Debug.Log(usedSpawns[i]);
-                //++i;
-                //=======
-                if (player.customProperties["myspawn"] != null)
+                if (player.customProperties["myspawn"] != null && (int)player.customProperties["myspawn"] != (int)100)
                 {
+                    Debug.Log((int)player.customProperties["myspawn"]);
                     j = (int)player.customProperties["myspawn"];
                     usedSpawns[j] = j;
-                    //>>>>>>> development
                 }
-                //}
             }
             for (i = 0; i < usedSpawns.Length; ++i)
             {
@@ -175,8 +166,8 @@ public class NetworkManager : MonoBehaviour
             }
             int j = 0;
             foreach (var player in PhotonNetwork.playerList)
-            {
-                if (player.customProperties["myspawn"] != null || (string)player.customProperties["myspawn"] != "teacher")
+            { 
+                if (player.customProperties["myspawn"] != null && (int)player.customProperties["myspawn"] != 100)
                 {
                     j = (int)player.customProperties["myspawn"];
                     usedSpawns[j] = j;

@@ -19,8 +19,9 @@ public class ColorChange : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        if (hitbyraycast && Input.GetKey(KeyCode.Mouse0))
+        if (hitbyraycast && Input.GetKeyDown(KeyCode.Mouse0))
         {
+            Debug.Log((int)PhotonNetwork.player.customProperties["myspawn"]);
             ExitGames.Client.Photon.Hashtable tmp = PhotonNetwork.player.customProperties;
             int i = (int)(tmp["myspawn"]);
             ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
