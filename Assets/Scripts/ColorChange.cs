@@ -21,7 +21,6 @@ public class ColorChange : MonoBehaviour {
     void Update () {
         if (hitbyraycast && Input.GetKeyDown(KeyCode.Mouse0))
         {
-            Debug.Log((int)PhotonNetwork.player.customProperties["myspawn"]);
             ExitGames.Client.Photon.Hashtable tmp = PhotonNetwork.player.customProperties;
             int i = (int)(tmp["myspawn"]);
             ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();

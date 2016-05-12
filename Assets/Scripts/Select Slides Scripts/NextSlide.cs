@@ -38,7 +38,7 @@ public class NextSlide : MonoBehaviour {
         }
         else
         {
-            gameObject.GetComponent<Renderer>().material.color = Color.black;
+            gameObject.GetComponent<Renderer>().material.color = Color.white;
         }
         hitbyraycast = false;
     }
