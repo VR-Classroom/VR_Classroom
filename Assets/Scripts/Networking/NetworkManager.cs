@@ -81,8 +81,8 @@ public class NetworkManager : MonoBehaviour
         foreach (var player in PhotonNetwork.playerList)
         {
             //<<<<<<< HEAD
-            if (name.Contains("spawnPlayer"))
-            {
+            //if (name.Contains("spawnPlayer"))
+            //{
                 //Debug.Log(name);
                 //usedSpawns[i] = ((int)(tmp[name]));
                 //Debug.Log(usedSpawns[i]);
@@ -94,7 +94,7 @@ public class NetworkManager : MonoBehaviour
                     usedSpawns[j] = j;
                     //>>>>>>> development
                 }
-            }
+            //}
         }
         for (i = 0; i < usedSpawns.Length; ++i)
         {
