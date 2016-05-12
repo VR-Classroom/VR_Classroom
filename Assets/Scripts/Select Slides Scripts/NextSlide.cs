@@ -1,18 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.SceneManagement;
 
-public class NextSetSlides : MonoBehaviour
-{
-
-    public GameObject scriptHolder;
+public class NextSlide : MonoBehaviour {
 
     bool hitbyraycast = false;
+    public GameObject projector;
+    PlayerInfo p;
 
     // Use this for initialization
     void Start()
     {
-
+        GameObject[] gos = GameObject.FindGameObjectsWithTag("PlayerInfo");
+        p = (PlayerInfo)gos[0].GetComponent(typeof(PlayerInfo));
+        if (p.privilege != "T")
+        {
+            gameObject.SetActive(false);
+        }
     }
 
     void HitByRaycast()
@@ -26,7 +29,7 @@ public class NextSetSlides : MonoBehaviour
     {
         if (hitbyraycast && Input.GetKeyDown(KeyCode.Mouse0))
         {
-            scriptHolder.GetComponent<ShowPPTNames>().Next();
+            projector.GetComponent<Change_Mesh_Render>().nextSlide();
         }
 
         if (hitbyraycast)
@@ -35,7 +38,7 @@ public class NextSetSlides : MonoBehaviour
         }
         else
         {
-            gameObject.GetComponent<Renderer>().material.color = Color.white;
+            gameObject.GetComponent<Renderer>().material.color = Color.black;
         }
         hitbyraycast = false;
     }

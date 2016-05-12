@@ -1,35 +1,89 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class ShowPPTNames : MonoBehaviour {
 
     PlayerInfo p;
-    public GameObject podium;
+    public GameObject[] podium;
+    int numNexts = 0;
+    int currentPPTnames = 0;
+    string[] pptNames;
+    string ppt1;
+    string ppt2;
 
     // Use this for initialization
     void Start () {
         GameObject[] gos = GameObject.FindGameObjectsWithTag("PlayerInfo");
         p = (PlayerInfo)gos[0].GetComponent(typeof(PlayerInfo));
         if (p.privilege != "T")
-            podium.gameObject.SetActive(false);
+        {
+            for (int i = 0; i < podium.Length; ++i)
+            {
+                podium[i].gameObject.SetActive(false);
+            }
+        }
+        StartCoroutine(getPPTInfo());
+    }
 
+    public void Next()
+    {
+        if (pptNames.Length > (currentPPTnames + 1))
+        {
+            ppt1 = pptNames[currentPPTnames + 1];
+            ++currentPPTnames;
+        }
+        else
+        {
+            return;
+        }
+        if (pptNames.Length > (currentPPTnames + 1))
+        {
+            ppt2 = pptNames[currentPPTnames + 1];
+            ++currentPPTnames;
+        }
+        else
+        {
+            ppt2 = "";
+        }
+        //Debug.Log(ppt1);
+        //Debug.Log(ppt2);
+        podium[0].GetComponent<SelectPPT>().UpdateName(ppt1, ppt2);
+        podium[1].GetComponent<SelectPPT>().UpdateName(ppt1, ppt2);
+    }
+
+    public void prev()
+    {
+        if (currentPPTnames - 2 <= 0)
+        {
+            return;
+        }
+        if (currentPPTnames % 2 == 1)
+        {
+            ppt2 = pptNames[currentPPTnames - 2];
+            --currentPPTnames;
+            ppt1 = pptNames[currentPPTnames - 2];
+            --currentPPTnames;
+        }
+        else
+        {
+            ppt2 = pptNames[currentPPTnames - 1];
+            ppt1 = pptNames[currentPPTnames - 2];
+            --currentPPTnames;
+        }
+        //Debug.Log(ppt1);
+        //Debug.Log(ppt2);
+        podium[0].GetComponent<SelectPPT>().UpdateName(ppt1, ppt2);
+        podium[1].GetComponent<SelectPPT>().UpdateName(ppt1, ppt2);
     }
 	
 	// Update is called once per frame
 	void Update () {
-	
-	}
+        
+    }
 
     IEnumerator getPPTInfo()
     {
-
         WWWForm form = new WWWForm();
-
-        GameObject t = GameObject.Find("Title");
-        Text title = t.GetComponent<Text>();
 
         form.AddField("UID", p.uid);
 
@@ -49,19 +103,23 @@ public class ShowPPTNames : MonoBehaviour {
             string data = text;
             if (data == null || data.Trim() == "")
             {
-                title.text = "You have no PowerPoints";
+                //title.text = "You have no PowerPoints";
                 //Debug.Log("Invalid input");
             }
             else
             {
-                string[] pptNames = data.Split('/');
-                ExitGames.Client.Photon.Hashtable tmp = PhotonNetwork.room.customProperties;
-                ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
-                if(pptNames.Length != 0)
-                    h.Add("ppt1", pptNames[0]);
+                pptNames = data.Split('/');
+                if (pptNames.Length != 0)
+                {
+                    ppt1 = pptNames[0];
+                }
                 if (pptNames.Length >= 1)
-                    h.Add("ppt2", pptNames[1]);
-                PhotonNetwork.room.SetCustomProperties(h);
+                {
+                    ppt2 = pptNames[1];
+                    ++currentPPTnames;
+                }
+                podium[0].GetComponent<SelectPPT>().UpdateName(ppt1, ppt2);
+                podium[1].GetComponent<SelectPPT>().UpdateName(ppt1, ppt2);
             }
         }
     }

@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class PrevSetSlides : MonoBehaviour
 {
+    public GameObject scriptHolder;
 
     bool hitbyraycast = false;
 
@@ -22,9 +23,9 @@ public class PrevSetSlides : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (hitbyraycast && Input.GetKey(KeyCode.Mouse0))
+        if (hitbyraycast && Input.GetKeyDown(KeyCode.Mouse0))
         {
-
+            scriptHolder.GetComponent<ShowPPTNames>().prev();
         }
 
         if (hitbyraycast)
@@ -33,7 +34,7 @@ public class PrevSetSlides : MonoBehaviour
         }
         else
         {
-            gameObject.GetComponent<Renderer>().material.color = Color.black;
+            gameObject.GetComponent<Renderer>().material.color = Color.white;
         }
         hitbyraycast = false;
     }

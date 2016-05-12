@@ -1,13 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.SceneManagement;
 
-public class NextSetSlides : MonoBehaviour
-{
-
-    public GameObject scriptHolder;
+public class SelectPPT : MonoBehaviour {
 
     bool hitbyraycast = false;
+    public GameObject Nameppt;
+    public GameObject projector;
 
     // Use this for initialization
     void Start()
@@ -21,12 +19,22 @@ public class NextSetSlides : MonoBehaviour
         hitbyraycast = true;
     }
 
+    public void UpdateName(string ppt1, string ppt2)
+    {
+        if (this.gameObject.name == "ppt1")
+        {
+            Nameppt.GetComponent<TextMesh>().text = ppt1;
+        }
+        else
+            Nameppt.GetComponent<TextMesh>().text = ppt2;
+    }
+
     // Update is called once per frame
     void Update()
     {
         if (hitbyraycast && Input.GetKeyDown(KeyCode.Mouse0))
         {
-            scriptHolder.GetComponent<ShowPPTNames>().Next();
+            projector.GetComponent<Change_Mesh_Render>().intitSlides(Nameppt.GetComponent<TextMesh>().text);
         }
 
         if (hitbyraycast)
@@ -35,7 +43,7 @@ public class NextSetSlides : MonoBehaviour
         }
         else
         {
-            gameObject.GetComponent<Renderer>().material.color = Color.white;
+            gameObject.GetComponent<Renderer>().material.color = Color.black;
         }
         hitbyraycast = false;
     }
