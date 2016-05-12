@@ -152,6 +152,7 @@ namespace ExitGames.Photon.DemoPunVoice {
                     break;
                 case "Transmit":
                     if (rec) {
+                        Debug.Log("SettingTransmit:" + toggle.isOn);
                         rec.Transmit = toggle.isOn;
                     }
                     break;

@@ -1,17 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class NetworkManager : MonoBehaviour
 {
 
-    const string VERSION = "v0.0.6";
+    const string VERSION = "v0.0.7";
     public string roomName = "TEST";
     public string prefabName = "User";
     private bool startCheck = false;
     public Transform[] spawnPoints;
     [SerializeField]
     public Transform TeacherspawnPoints;
+
+    public delegate void OnCharacterInstantiated(GameObject character);
+
+    public static event OnCharacterInstantiated CharacterInstantiated;
+
+    PlayerInfo p;
 
 
     void Start()
@@ -22,7 +29,7 @@ public class NetworkManager : MonoBehaviour
             SceneManager.LoadScene("LoginMenu");
         }
 
-        PlayerInfo p = (PlayerInfo)gos[0].GetComponent(typeof(PlayerInfo));
+        p = (PlayerInfo)gos[0].GetComponent(typeof(PlayerInfo));
         startConnection(p.roomJoin);
 
         //else
@@ -44,7 +51,6 @@ public class NetworkManager : MonoBehaviour
     void OnJoinedRoom()
     {
         startCheck = true;
-        //TODO: figure out how to spawn players in order not randomly
         GameObject SceenCamera = GameObject.Find("SceenCamera");
         if (SceenCamera != null && SceenCamera.activeSelf)
         {
@@ -68,9 +74,13 @@ public class NetworkManager : MonoBehaviour
         i = 0;
         foreach (string name in tmp.Keys)
         {
-            usedSpawns[i] = ((int)(tmp[name]));
-            //Debug.Log(usedSpawns[i]);
-            ++i;
+            if (name.Contains("spawnPlayer"))
+            {
+                //Debug.Log(name);
+                usedSpawns[i] = ((int)(tmp[name]));
+                //Debug.Log(usedSpawns[i]);
+                ++i;
+            }
         }
         for (i = 0; i < usedSpawns.Length; ++i)
         {
@@ -86,7 +96,22 @@ public class NetworkManager : MonoBehaviour
                 break;
         }
         Transform t = spawnPoints[i];
-        PhotonNetwork.Instantiate(prefabName, t.position, t.rotation, 0);
+
+
+        GameObject player = PhotonNetwork.Instantiate(prefabName, t.position, t.rotation, 0);
+        if (player)
+        {
+
+            ExitGames.Client.Photon.Hashtable canTalk = new ExitGames.Client.Photon.Hashtable();
+            canTalk.Add(p.uid, p.canTalk);
+            PhotonNetwork.room.SetCustomProperties(canTalk);
+
+
+            player.GetComponent<PlayerInfo>().uid = p.uid;
+            player.GetComponent<PlayerInfo>().canTalk = p.canTalk;
+            player.GetComponent<PlayerInfo>().fname = p.fname;
+            CharacterInstantiated(player);
+        }
         ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
         h.Add("spawnPlayer" + i, i);
         PhotonNetwork.room.SetCustomProperties(h);
@@ -117,6 +142,7 @@ public class NetworkManager : MonoBehaviour
                 h.Add("spawnPlayer" + i, usedSpawns[i]);
             }
             PhotonNetwork.room.SetCustomProperties(h);
+
         }
     }
 

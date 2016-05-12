@@ -1,10 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class NetworkPlayer : Photon.MonoBehaviour{
 
     public GameObject myCamera;
     public GameObject sphere;
+    public Image speaker;
+    public Text name;
+
+    PlayerInfo p;
 
     // Use this for initialization
     void Start()
@@ -13,18 +18,32 @@ public class NetworkPlayer : Photon.MonoBehaviour{
         {
             myCamera.SetActive(true);
             sphere.GetComponent<FollowCamera>().enabled = true;
-
-            //GetComponent<FollowCamera>().enabled = true;
-            //GetComponent<Raycast_Hit>().enabled = true;
-            //GetComponent<Camera>().enabled = true;
+            this.gameObject.GetComponent<PhotonVoiceRecorder>().enabled = true;
+            name.text = "";
+            name = null;
+            speaker = null;
+            
         }
-        else {
-        }
+        GameObject[] gos = GameObject.FindGameObjectsWithTag("PlayerInfo");
+        p = (PlayerInfo)gos[0].GetComponent(typeof(PlayerInfo));
     }
     void Update()
     {
-        //ExitGames.Client.Photon.Hashtable tmp = PhotonNetwork.player.customProperties;
-        // Debug.Log("I am at spawn point " + tmp["myspawn"]);
+
+        if (speaker != null && name != null)
+        {
+            Camera speakerC = speaker.GetComponent<LookAtCamera>().c;
+            Camera nameC = name.GetComponent<LookAtCamera>().c;
+            Camera mainc = GameObject.Find("Camera").GetComponent<Camera>();
+            if (mainc != null && speakerC != mainc&& nameC != Camera.main)
+            {
+                //Debug.Log("Updating Main camera for name and speaker");
+                speaker.GetComponent<LookAtCamera>().c = mainc;
+                name.GetComponent<LookAtCamera>().c = mainc;
+                name.text = gameObject.GetComponent<PlayerInfo>().fname;
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             ExitGames.Client.Photon.Hashtable tmp = PhotonNetwork.player.customProperties;
@@ -35,5 +54,17 @@ public class NetworkPlayer : Photon.MonoBehaviour{
             PhotonNetwork.DestroyPlayerObjects(PhotonNetwork.player);
             Application.Quit();
         }
+
+
+        ExitGames.Client.Photon.Hashtable tmpRoom= PhotonNetwork.room.customProperties;
+        if (p != null&& tmpRoom != null && tmpRoom[p.uid] != null)
+        {
+            if (p.canTalk != (bool)tmpRoom[p.uid])
+            {
+                p.canTalk = (bool)tmpRoom[p.uid];
+            }
+        }
+        
+
     }
  }

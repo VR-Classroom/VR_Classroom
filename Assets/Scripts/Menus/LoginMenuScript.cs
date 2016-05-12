@@ -63,6 +63,8 @@ public class LoginMenuScript : MonoBehaviour
 
         GameObject[] gos = GameObject.FindGameObjectsWithTag("PlayerInfo");
 
+        
+
 
         //Debug.Log("gosLength:" + gos.Length);
         for (int i = 0; i < gos.Length - 1; ++i)

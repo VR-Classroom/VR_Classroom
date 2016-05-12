@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerInfo : MonoBehaviour
+public class PlayerInfo : Photon.MonoBehaviour
 {
 
     public string fname;
@@ -12,6 +12,22 @@ public class PlayerInfo : MonoBehaviour
     public string uid;
     public string roomJoin;
 
+    public bool canTalk;
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.isWriting)
+        {
+            stream.SendNext(uid);
+            stream.SendNext(canTalk);
+            stream.SendNext(fname);
+        }
+        else {
+            uid = (string) stream.ReceiveNext();
+            canTalk= (bool)stream.ReceiveNext();
+            fname = (string)stream.ReceiveNext();
+        }
+    }
 
     public void setRoomName(string roomName)
     {
@@ -35,14 +51,11 @@ public class PlayerInfo : MonoBehaviour
         string row = rows[0];
         string[] fields = { "UID", "firstName", "lastName", "gender", "privilege", "email" };
         string[] fieldValues = new string[fields.Length];
-        //foreach(string s in fields)
         for (int i = 0; i < fields.Length; ++i)
         {
             
             fieldValues[i] = RequestHelper.GetValue(row, fields[i]);
         }
-
-        //Debug.Log(GetValue(rows[0], "email"));
 
         initPlayer(fieldValues[0], fieldValues[1], fieldValues[2], fieldValues[3], fieldValues[4], fieldValues[5]);
     }
@@ -66,7 +79,6 @@ public class PlayerInfo : MonoBehaviour
     void Awake()
     {
         DontDestroyOnLoad(transform.gameObject);
-        //transform.gameObject.tag = "PlayerInfo";
     }
 
 
