@@ -14,9 +14,20 @@ public class VoiceUpdate : MonoBehaviour {
 
     private bool prev;
 
+	int BUFFSIZ;
+	float[]  buffer1;
+	float[]  buffer2;
+
+	//FIXME GET THE AUDIOCLIP OF THE RECORDING
+	public AudioClip mic;
+
     // Use this for initialization
     void Start () {
-	
+		BUFFSIZ = 256;
+		float[]  buffer1 = new float[BUFFSIZ];
+		float[]  buffer2 = new float[BUFFSIZ];
+
+		mic = rec.rec.mic;
 	}
 
 
@@ -52,11 +63,42 @@ public class VoiceUpdate : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        if (rec && prev != canTalk)
-        {
-            Debug.Log("Got rec.Transmit=" + canTalk);
-            rec.Transmit = canTalk;
-            prev = canTalk;
-        }
+		if (rec && prev != canTalk) {
+			Debug.Log ("Got rec.Transmit=" + canTalk);
+			rec.Transmit = canTalk;
+			prev = canTalk;
+		} 
+			
     }
+
+	private int micPrevPos;
+	private int micLoopCnt;
+	private int readAbsPos;
+
+	public bool GetData(float[] buffer)
+	{
+		int micPos = Microphone.GetPosition(null);
+		// loop detection
+		if (micPos < micPrevPos)
+		{
+			micLoopCnt++;            
+		}
+		micPrevPos = micPos;
+
+		var micAbsPos = micLoopCnt * mic.samples + micPos;
+
+		var bufferSamplesCount = buffer.Length / mic.channels;
+
+		var nextReadPos = readAbsPos + bufferSamplesCount;
+		if (nextReadPos < micAbsPos)
+		{
+			mic.GetData(buffer, readAbsPos % mic.samples);
+			readAbsPos = nextReadPos;
+			return true;
+		}
+		else
+		{
+			return false;
+		}        
+	}
 }

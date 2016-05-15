@@ -55,6 +55,17 @@ public class VoiceTest : MonoBehaviour
     [SerializeField]
     private int calibrationMilliSeconds = 2000;
 
+	//---------------------------------------------------------
+	//ADDING VARIABLES FIXME
+
+	int BUFFSIZ;
+	float[]  buffer;
+
+	float playtime;
+
+	public AudioClip mic;
+	//---------------------------------------------------------
+
     private void OnEnable()
     {
         NetworkManager.CharacterInstantiated += CharacterInstantiation_CharacterInstantiated;
@@ -197,6 +208,12 @@ public class VoiceTest : MonoBehaviour
 
         prevTalk = !p.canTalk;
         volumeBeforeMute = AudioListener.volume;
+
+		//ADDING FIXME
+		mic = rec.rec.mic;
+
+		BUFFSIZ = mic.frequency;
+		buffer = new float[2 * BUFFSIZ];
     }
 
     private void PunSwitchOnClick()
@@ -321,7 +338,113 @@ public class VoiceTest : MonoBehaviour
                 //        rec.LevelMeter.CurrentPeakAmp.ToString("0.000000"));
             }
         }
+
+		//----------------------------------------------------
+		//ADDING THINGS
+		//-----------------------------------------------------
+
+		if (p.canTalk) {
+			Debug.Log ("I am in VoiceTest");
+		} else {
+			Debug.Log ("I am in VoiceTest and cannot speak");
+		}
+
+		if (p.canTalk && playtime < Time.time) {
+			Debug.Log ("I am in VoiceTest and ready to play");
+
+
+
+			if (GetData (buffer) && notSending) {
+				;
+			}
+
+
+			//AudioSource.PlayClipAtPoint (mic, transform.position);
+
+			//first = false;
+		}
     }
+
+	//---------------------------------------------------------------
+	//ADDING THINGS
+	//------------------------------------------------------------
+
+	private int micPrevPos;
+	private int micLoopCnt;
+	private int readAbsPos;
+
+	public bool GetData(float[] buffer)
+	{
+		int micPos = Microphone.GetPosition(null);
+		// loop detection
+		if (micPos < micPrevPos)
+		{
+			micLoopCnt++;            
+		}
+		micPrevPos = micPos;
+
+		var micAbsPos = micLoopCnt * mic.samples + micPos;
+
+		var bufferSamplesCount = buffer.Length / mic.channels;
+
+		var nextReadPos = readAbsPos + bufferSamplesCount;
+		if (nextReadPos < micAbsPos)
+		{
+			mic.GetData(buffer, readAbsPos % mic.samples);
+			readAbsPos = nextReadPos;
+			return true;
+		}
+		else
+		{
+			return false;
+		}        
+	}
+
+	//The following code was not written by us, credit goes to users darktable and mitay-walle of github
+	//https://gist.github.com/darktable/2317063
+
+	struct ClipData
+	{
+		public int samples;
+	}
+	private Thread WritingThread;
+
+	void ConvertAndWrite(MemoryStream memStream, ClipData clipData)
+	{
+		float[] samples = new float[clipData.samples];
+
+		Int16[] intData = new Int16[samples.Length];
+
+		Byte[] bytesData = new Byte[samples.Length * 2];
+
+		const float rescaleFactor = 32767; //to convert float to Int16
+
+		for (int i = 0; i < samples.Length; i++)
+		{
+			intData[i] = (short)(samples[i] * rescaleFactor);
+		}
+		Buffer.BlockCopy(intData, 0, bytesData, 0, bytesData.Length);
+		memStream.Write(bytesData, 0, bytesData.Length);
+	}
+
+	public AudioClip Save(string filename, AudioClip clip)
+	{
+		if (!filename.ToLower().EndsWith(".wav"))
+			filename += ".wav";
+		string filepath = Path.Combine(Application.persistentDataPath, filename);
+		Debug.Log(filepath);
+		Directory.CreateDirectory(Path.GetDirectoryName(filepath));
+		ClipData clipData = new ClipData();
+		clipData.samples = clip.samples;
+		using (FileStream fileStream = CreateEmpty(filepath))
+		{
+			MemoryStream memStream = new MemoryStream();
+			WritingThread = new Thread(() => ConvertAndWrite(memStream, clipData));
+			memStream.WriteTo(fileStream);
+			WriteHeader(fileStream, clip);
+		}
+		return clip;
+	}
 }
 
 //}

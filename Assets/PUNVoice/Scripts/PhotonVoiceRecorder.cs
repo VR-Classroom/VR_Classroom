@@ -61,10 +61,13 @@ internal class AudioClipWrapper : Voice.IAudioStream
     }
 }
 
+
+//CHANGING TO PUBLIC FIXME TO ACCESS FROM ANOTHER SCRIPT
 // Wraps UnityEngine.Microphone with Voice.IAudioStream interface.
-internal class MicWrapper : Voice.IAudioStream
+public class MicWrapper : Voice.IAudioStream
 {
-    private AudioClip mic;
+	//CHANGED FIXME AudioClip to public for outside access
+    public AudioClip mic;
     private string device;
 
     public MicWrapper(string device, int suggestedFrequency)
@@ -81,6 +84,8 @@ internal class MicWrapper : Voice.IAudioStream
             frequency = maxFreq;
         }
         this.mic = Microphone.Start(device, true, 1, frequency);
+
+		//TODO: upload this to the server
     }
 
     public int SamplingRate { get { return this.mic.frequency; } }
@@ -130,6 +135,9 @@ public class PhotonVoiceRecorder : Photon.MonoBehaviour
     private bool microphoneDeviceSet = false;
     private bool microphoneDeviceUsed = false;
 
+	//ADDING FIXME set rec to public so we can access
+	public MicWrapper rec;
+
     /// <summary>
     /// Set aidio clip in instector for playing back instead of microphone signal streaming.
     /// </summary>
@@ -139,6 +147,9 @@ public class PhotonVoiceRecorder : Photon.MonoBehaviour
     /// Loop playback for audio clip sources.
     /// </summary>
     public bool LoopAudioClip = true;
+
+	//ADDED FIXME SET MIC TO GLOBAL VARIABLE TO ACCESS FROM OUTSIDE
+	public MicWrapper mic;
 
     /// <summary>
     /// Returns voice activity detector for recorder's audio stream.
@@ -220,7 +231,9 @@ public class PhotonVoiceRecorder : Photon.MonoBehaviour
                 {
                     Debug.Log("PUNVoice: Setting recorder's microphone device to " + this.MicrophoneDevice);
                 }
-                var mic = new MicWrapper(this.MicrophoneDevice, (int)pvs.SamplingRate);
+				//CHANGED FIXME SET VAR TO PUBLIC VARIABLE
+                //var mic = new MicWrapper(this.MicrophoneDevice, (int)pvs.SamplingRate);
+				mic = new MicWrapper(this.MicrophoneDevice, (int)pvs.SamplingRate);
                 this.microphoneDeviceUsed = true;
                 channels = mic.Channels;
                 audioStream = mic;                

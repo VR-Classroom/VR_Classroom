@@ -85,6 +85,8 @@ public class PhotonVoiceSpeaker : Photon.MonoBehaviour
         // using streaming clip leads to too long delays
         this.source.clip = AudioClip.Create("PhotonVoice", bufferSamples, channels, frequency, false);
 
+		//TODO: add it to be uploaded to the server
+
         this.streamSamplePos = 0;
         this.playSamplePos = 0;
 
