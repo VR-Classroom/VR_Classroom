@@ -11,6 +11,8 @@ public class RequestHelper : MonoBehaviour {
     public static string URL_GET_PRESENTATIONS = "http://52.38.66.127/scripts/getPresentationList.php";
     public static string URL_GET_PRESENTATION_SIZE = "http://52.38.66.127/scripts/getPresentationSize.php";
 
+    public static string URL_UPLOAD_PPT = "http://52.38.66.127/uploadpage.html";
+
     // Use this for initialization
     void Start () {
 	
