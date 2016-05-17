@@ -53,7 +53,13 @@ public class Change_Mesh_Render : MonoBehaviour {
     public void intitSlides(string name)
     {
         StartCoroutine(runInitSlides(name));
-        network.GetComponent<UpdateMeshVarriable>().changePPT(url);
+        if(name == slideName)
+        {
+            current = 0;
+            network.GetComponent<UpdateMeshVarriable>().changePPT("http://52.38.66.127/users/" + p.uid + "/" + slideName + "/p-" + current + ".jpg");
+        }
+        else
+            network.GetComponent<UpdateMeshVarriable>().changePPT(url);
     }
 
     public IEnumerator prevSlidePullup()
@@ -86,7 +92,33 @@ public class Change_Mesh_Render : MonoBehaviour {
         WWW www = new WWW("http://52.38.66.127/users/" + p.uid + "/" + slideName + "/p-" + current + ".jpg");
         yield return www;
         GetComponent<Renderer>().material.mainTexture = www.texture;
-        count = 8;
+        WWWForm form = new WWWForm();
+
+        form.AddField("UID", p.uid);
+        form.AddField("PPT", slideName);
+
+        WWW download = new WWW(RequestHelper.URL_GET_PRESENTATION_SIZE, form);
+
+        // Wait until the download is done
+        yield return download;
+
+        if (!string.IsNullOrEmpty(download.error))
+        {
+            print("Error downloading: " + download.error);
+        }
+        else
+        {
+            string data = download.text;
+            if (data == null || data.Trim() == "")
+            {
+                //title.text = "You have no PowerPoints";
+                //Debug.Log("Invalid input");
+            }
+            else
+            {
+                count = System.Convert.ToInt32(data);
+            }
+        }
         current = 0;
     }
 }

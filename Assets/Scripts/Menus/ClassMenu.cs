@@ -60,4 +60,9 @@ public class ClassMenu : MonoBehaviour
         cancel.gameObject.SetActive(false);
     }
 
+    public void okPress()
+    {
+        SceneManager.LoadScene("ClassesMenu");
+    }
+
 }

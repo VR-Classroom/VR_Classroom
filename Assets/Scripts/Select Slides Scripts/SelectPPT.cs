@@ -32,7 +32,7 @@ public class SelectPPT : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (hitbyraycast && Input.GetKeyDown(KeyCode.Mouse0))
+        if (hitbyraycast && Input.GetKey(KeyCode.Mouse0))
         {
             projector.GetComponent<Change_Mesh_Render>().intitSlides(Nameppt.GetComponent<TextMesh>().text);
         }

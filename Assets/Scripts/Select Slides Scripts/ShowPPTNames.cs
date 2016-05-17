@@ -87,12 +87,12 @@ public class ShowPPTNames : MonoBehaviour {
 
         form.AddField("UID", p.uid);
 
-        WWW download = new WWW(RequestHelper.URL_GET_CLASSES, form);
+        WWW download = new WWW(RequestHelper.URL_GET_PRESENTATIONS, form);
 
         // Wait until the download is done
         yield return download;
 
-        string text = "presentation1 / presentation2 / presentation3 /";
+        //string text = "presentation1 / presentation2 / presentation3 /";
 
         if (!string.IsNullOrEmpty(download.error))
         {
@@ -100,7 +100,7 @@ public class ShowPPTNames : MonoBehaviour {
         }
         else
         {
-            string data = text;
+            string data = download.text;
             if (data == null || data.Trim() == "")
             {
                 //title.text = "You have no PowerPoints";

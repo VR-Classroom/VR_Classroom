@@ -51,10 +51,6 @@ public class NetworkManager : MonoBehaviour
 
     void OnJoinedRoom()
     {
-        //<<<<<<< HEAD
-        //        startCheck = true;
-        //=======
-        //        //TODO: figure out how to spawn players in order not randomly
         //>>>>>>> development
         GameObject SceenCamera = GameObject.Find("SceenCamera");
         if (SceenCamera != null && SceenCamera.activeSelf)
@@ -98,7 +94,7 @@ public class NetworkManager : MonoBehaviour
         else
         {
             int i = 0;
-            int[] usedSpawns = new int[10];
+            int[] usedSpawns = new int[spawnPoints.Length];
             for (i = 0; i < usedSpawns.Length; ++i)
             {
                 usedSpawns[i] = -1;
@@ -110,14 +106,14 @@ public class NetworkManager : MonoBehaviour
             {
                 if (player.customProperties["myspawn"] != null && (int)player.customProperties["myspawn"] != (int)100)
                 {
-                    Debug.Log((int)player.customProperties["myspawn"]);
                     j = (int)player.customProperties["myspawn"];
                     usedSpawns[j] = j;
                 }
             }
+            bool unavailable = false;
             for (i = 0; i < usedSpawns.Length; ++i)
             {
-                bool unavailable = false;
+                unavailable = false;
                 for (j = 0; j < usedSpawns.Length; ++j)
                 {
                     if (i == usedSpawns[j])
@@ -127,6 +123,10 @@ public class NetworkManager : MonoBehaviour
                 }
                 if (!unavailable)
                     break;
+            }
+            if(unavailable)
+            {
+                SceneManager.LoadScene("ClassroomFull");
             }
             Transform t = spawnPoints[i];
 
@@ -159,7 +159,7 @@ public class NetworkManager : MonoBehaviour
         if (numPlayers != PhotonNetwork.playerList.Length)
         {
             int i = 0;
-            int[] usedSpawns = new int[8];
+            int[] usedSpawns = new int[spawnPoints.Length];
             for (i = 0; i < usedSpawns.Length; ++i)
             {
                 usedSpawns[i] = -1;
@@ -179,11 +179,7 @@ public class NetworkManager : MonoBehaviour
                 h.Add("spawnPlayer" + i, usedSpawns[i]);
             }
             PhotonNetwork.room.SetCustomProperties(h);
-            //<<<<<<< HEAD
-
-            //=======
             numPlayers = PhotonNetwork.playerList.Length;
-            //>>>>>>> development
         }
     }
 
