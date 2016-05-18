@@ -5,7 +5,7 @@ public class SelectPPT : MonoBehaviour {
 
     bool hitbyraycast = false;
     public GameObject Nameppt;
-    public GameObject projector;
+    public GameObject []projectors;
 
     // Use this for initialization
     void Start()
@@ -34,6 +34,7 @@ public class SelectPPT : MonoBehaviour {
     {
         if (hitbyraycast && Input.GetKey(KeyCode.Mouse0))
         {
+            foreach (GameObject projector in projectors)
             projector.GetComponent<Change_Mesh_Render>().intitSlides(Nameppt.GetComponent<TextMesh>().text);
         }
 

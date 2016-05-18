@@ -4,7 +4,7 @@ using System.Collections;
 public class NextSlide : MonoBehaviour {
 
     bool hitbyraycast = false;
-    public GameObject projector;
+    public GameObject[] projectors;
     PlayerInfo p;
 
     // Use this for initialization
@@ -29,6 +29,7 @@ public class NextSlide : MonoBehaviour {
     {
         if (hitbyraycast && Input.GetKeyDown(KeyCode.Mouse0))
         {
+            foreach(GameObject projector in projectors)
             projector.GetComponent<Change_Mesh_Render>().nextSlide();
         }
 

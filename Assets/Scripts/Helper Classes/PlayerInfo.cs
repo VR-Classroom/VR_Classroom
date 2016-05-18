@@ -13,6 +13,7 @@ public class PlayerInfo : Photon.MonoBehaviour
     public string dispName;
     public string title;
     public string roomJoin;
+    public int classSize;
 
     public bool canTalk;
 

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class UpdateMeshVarriable : MonoBehaviour {
 
-    public GameObject projector;
+    public GameObject[] projectors;
 
 	// Use this for initialization
 	void Start () {
@@ -12,9 +12,12 @@ public class UpdateMeshVarriable : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (projector.GetComponent <Change_Mesh_Render>().url != (string)PhotonNetwork.room.customProperties["slideName"] && (string)PhotonNetwork.room.customProperties["slideName"] != null)
+        foreach (GameObject projector in projectors)
         {
-            projector.GetComponent<Change_Mesh_Render>().updateClients((string)PhotonNetwork.room.customProperties["slideName"]);
+            if (projector.GetComponent<Change_Mesh_Render>().url != (string)PhotonNetwork.room.customProperties["slideName"] && (string)PhotonNetwork.room.customProperties["slideName"] != null)
+            {
+                projector.GetComponent<Change_Mesh_Render>().updateClients((string)PhotonNetwork.room.customProperties["slideName"]);
+            }
         }
 	}
 
