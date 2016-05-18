@@ -135,9 +135,6 @@ public class PhotonVoiceRecorder : Photon.MonoBehaviour
     private bool microphoneDeviceSet = false;
     private bool microphoneDeviceUsed = false;
 
-	//ADDING FIXME set rec to public so we can access
-	public MicWrapper rec;
-
     /// <summary>
     /// Set aidio clip in instector for playing back instead of microphone signal streaming.
     /// </summary>
