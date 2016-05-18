@@ -405,7 +405,7 @@ public class VoiceTest : MonoBehaviour
 			}
 			if ((sendBuf1 || sendBuf2) && notSending) {
 				if (filePath != "") {
-					//UnityEditor.FileUtil.DeleteFileOrDirectory (filePath);
+					UnityEditor.FileUtil.DeleteFileOrDirectory (filePath);
 
 					filePath = "";
 				}
