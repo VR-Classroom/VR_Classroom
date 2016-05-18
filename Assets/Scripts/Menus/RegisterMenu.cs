@@ -17,6 +17,7 @@ public class RegisterMenu : MonoBehaviour
     public InputField password2;
     public Dropdown gender;
     public Dropdown studentTeacher;
+    public Dropdown userTitle;
 
 
     private string fname;
@@ -26,6 +27,7 @@ public class RegisterMenu : MonoBehaviour
     private string pass2;
     private string gen;
     private string priv;
+    private string title;
 
 
 
@@ -50,7 +52,7 @@ public class RegisterMenu : MonoBehaviour
             password.GetComponent<Image>().color = Color.white;
             invalidText.enabled = false;
         }
-        else if(password2.isFocused == true)
+        else if (password2.isFocused == true)
         {
             password2.GetComponent<Image>().color = Color.white;
             invalidText.enabled = false;
@@ -81,6 +83,7 @@ public class RegisterMenu : MonoBehaviour
 
         gender = gender.GetComponent<Dropdown>();
         studentTeacher = studentTeacher.GetComponent<Dropdown>();
+        userTitle = userTitle.GetComponent<Dropdown>();
 
         invalidText = GameObject.Find("Invalid").GetComponent<Text>();
         invalidText.enabled = false;
@@ -112,12 +115,13 @@ public class RegisterMenu : MonoBehaviour
         pass2 = password2.text.Trim();
         gen = gender.options[gender.value].text.Trim();
         priv = studentTeacher.options[studentTeacher.value].text.Trim();
+        title = userTitle.options[userTitle.value].text.Trim();
 
         bool valid = true;
 
         if (string.IsNullOrEmpty(fname) || string.IsNullOrEmpty(lname)
             || string.IsNullOrEmpty(emailTxt) || string.IsNullOrEmpty(pass) || string.IsNullOrEmpty(pass2)
-            || string.IsNullOrEmpty(gen) || string.IsNullOrEmpty(priv))
+            || string.IsNullOrEmpty(gen) || string.IsNullOrEmpty(priv) || string.IsNullOrEmpty(title))
         {
             Debug.Log("A field was empty");
             showInvalid("All fields are required!");
@@ -147,6 +151,10 @@ public class RegisterMenu : MonoBehaviour
 
         if (valid)
         {
+            if (title == "Title")
+            {
+                title = "";
+            }
 
             if (gen == "Specify Gender")
             {
@@ -199,6 +207,7 @@ public class RegisterMenu : MonoBehaviour
         //form.AddField("BIRTH", birth);
         form.AddField("EMAIL", emailTxt);
         form.AddField("PASS", pass);
+        form.AddField("TITLE", title);
 
         WWW download = new WWW(RequestHelper.URL_REGISTER, form);
 
@@ -216,11 +225,17 @@ public class RegisterMenu : MonoBehaviour
                 Debug.Log("Invalid input");
             }
             else {
-                //string[] rows = data.Split(';');
-                //Debug.Log(GetValue(rows[0], "email"));
-                //Debug.Log(download.text);
-                //Debug.Log("Valid User. TODO: save data before moving to new scene");
-                SceneManager.LoadScene("LoginMenu");
+                if(data.Contains("Duplicate entry") && data.Contains("email"))
+                {
+                    email.GetComponent<Image>().color = Color.red;
+                    showInvalid("that email already exists");
+                }
+                else if (data.Contains("ERROR"))
+                {
+                    showInvalid("Oops. An Error Occured!");
+                }
+                else
+                    SceneManager.LoadScene("LoginMenu");
             }
         }
 

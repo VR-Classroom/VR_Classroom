@@ -10,6 +10,8 @@ public class PlayerInfo : Photon.MonoBehaviour
     public string privilege;
     public string email;
     public string uid;
+    public string dispName;
+    public string title;
     public string roomJoin;
 
     public bool canTalk;
@@ -20,12 +22,12 @@ public class PlayerInfo : Photon.MonoBehaviour
         {
             stream.SendNext(uid);
             stream.SendNext(canTalk);
-            stream.SendNext(fname);
+            stream.SendNext(dispName);
         }
         else {
             uid = (string) stream.ReceiveNext();
             canTalk= (bool)stream.ReceiveNext();
-            fname = (string)stream.ReceiveNext();
+            dispName = (string)stream.ReceiveNext();
         }
     }
 
@@ -34,7 +36,7 @@ public class PlayerInfo : Photon.MonoBehaviour
         roomJoin = roomName;
     }
 
-    public void initPlayer(string uid, string fname, string lname, string gender, string privilege, string email)
+    public void initPlayer(string uid, string fname, string lname, string gender, string privilege, string email,string title)
     {
         this.fname = fname;
         this.lname = lname;
@@ -42,14 +44,25 @@ public class PlayerInfo : Photon.MonoBehaviour
         this.privilege = privilege;
         this.email = email;
         this.uid = uid;
-    }
+        this.title = title;
+        
+        if (string.IsNullOrEmpty(title) || privilege.Equals("S") )//|| title.Equals(" "))
+        {
+            this.dispName = fname;
+        }
+        else
+        {
+            this.dispName = title + " " + lname;
+        }
+        
+    } 
 
     public void initPlayer(string mysqlData)
     {
 
         string[] rows = mysqlData.Split(';');
         string row = rows[0];
-        string[] fields = { "UID", "firstName", "lastName", "gender", "privilege", "email" };
+        string[] fields = { "UID", "firstName", "lastName", "gender", "privilege", "email","title" };
         string[] fieldValues = new string[fields.Length];
         for (int i = 0; i < fields.Length; ++i)
         {
@@ -57,7 +70,7 @@ public class PlayerInfo : Photon.MonoBehaviour
             fieldValues[i] = RequestHelper.GetValue(row, fields[i]);
         }
 
-        initPlayer(fieldValues[0], fieldValues[1], fieldValues[2], fieldValues[3], fieldValues[4], fieldValues[5]);
+        initPlayer(fieldValues[0], fieldValues[1], fieldValues[2], fieldValues[3], fieldValues[4], fieldValues[5],fieldValues[6]);
     }
 
     public void resetInfo()
@@ -68,6 +81,7 @@ public class PlayerInfo : Photon.MonoBehaviour
         privilege = null;
         email = null;
         uid = null;
+        dispName = null;
     }
 
     // Use this for initialization
