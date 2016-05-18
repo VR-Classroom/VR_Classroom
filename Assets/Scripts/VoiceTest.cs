@@ -416,7 +416,7 @@ public class VoiceTest : MonoBehaviour
 
 				Debug.Log (System.DateTime.Today.ToString ());
 
-				string tempfilename = fileName + '-' + count.ToString ();
+				string tempfilename = fileName + '-' + count.ToString () + ".wav";
 				notSending = false;
 
 				AudioClip clip = AudioClip.Create ("frag", buf.Length, mic.channels, mic.frequency, false, false);
@@ -431,6 +431,7 @@ public class VoiceTest : MonoBehaviour
 				}
 
 				filePath = Save (tempfilename, clip);
+				Debug.Log (filePath);
 				//filePath = Save(tempfilename, mic);
 				count++;
 
@@ -447,7 +448,7 @@ public class VoiceTest : MonoBehaviour
 	//------------------------------------------------------------
 
 	IEnumerator Send(string filepath, string filename) {
-		WWW localfile = new WWW (filepath);
+		WWW localfile = new WWW ("file:///" + filepath);
 		yield return localfile;
 
 		WWWForm form = new WWWForm ();
