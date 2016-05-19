@@ -7,6 +7,7 @@ public class ClassMenu : MonoBehaviour
 {
     public Canvas createClassMenu;
     public Button createClass;
+    public Button uploadPpt;
 
     public Button cancel;
     PlayerInfo p;
@@ -26,9 +27,13 @@ public class ClassMenu : MonoBehaviour
         createClassMenu.enabled = false;
 
         createClass = createClass.GetComponent<Button>();
+        uploadPpt = uploadPpt.GetComponent<Button>();
 
         if (p.privilege != "T")
+        {
             createClass.gameObject.SetActive(false);
+            uploadPpt.gameObject.SetActive(false);
+        }
 
         cancel = cancel.GetComponent<Button>();
         cancel.gameObject.SetActive(false);
@@ -45,10 +50,17 @@ public class ClassMenu : MonoBehaviour
         SceneManager.LoadScene("LoginMenu");
     }
 
+    public void uploadPptPress()
+    {
+        Application.OpenURL(RequestHelper.URL_UPLOAD_PPT);
+    }
+
     public void CreateNewClassPress()
     {
+        
         createClassMenu.enabled = true;
         createClass.gameObject.SetActive(false);
+        uploadPpt.gameObject.SetActive(false);
         cancel.gameObject.SetActive(true);
     }
 
@@ -57,7 +69,13 @@ public class ClassMenu : MonoBehaviour
     {
         createClassMenu.enabled = false;
         createClass.gameObject.SetActive(true);
+        uploadPpt.gameObject.SetActive(true);
         cancel.gameObject.SetActive(false);
+    }
+
+    public void okPress()
+    {
+        SceneManager.LoadScene("ClassesMenu");
     }
 
 }

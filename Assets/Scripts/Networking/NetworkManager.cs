@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class NetworkManager : MonoBehaviour
 {
 
-    const string VERSION = "v0.0.7";
+    const string VERSION = "v0.1.0";
     public string roomName = "TEST";
     public string prefabName = "User";
     public Transform[] spawnPoints;
@@ -51,10 +51,6 @@ public class NetworkManager : MonoBehaviour
 
     void OnJoinedRoom()
     {
-        //<<<<<<< HEAD
-        //        startCheck = true;
-        //=======
-        //        //TODO: figure out how to spawn players in order not randomly
         //>>>>>>> development
         GameObject SceenCamera = GameObject.Find("SceenCamera");
         if (SceenCamera != null && SceenCamera.activeSelf)
@@ -69,69 +65,93 @@ public class NetworkManager : MonoBehaviour
                 Debug.Log("SceenCamera null");
             }
         }
-        int i = 0;
-        int[] usedSpawns = new int[10];
-        for (i = 0; i < usedSpawns.Length; ++i)
+        if (p.privilege == "T")
         {
-            usedSpawns[i] = -1;
+            ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+            h.Add("spawnTeacher", 0);
+            Transform t = TeacherspawnPoints;
+
+
+            GameObject myplayer = PhotonNetwork.Instantiate(prefabName, t.position, t.rotation, 0);
+            if (myplayer)
+            {
+
+                ExitGames.Client.Photon.Hashtable canTalk = new ExitGames.Client.Photon.Hashtable();
+                canTalk.Add(p.uid, p.canTalk);
+                PhotonNetwork.room.SetCustomProperties(canTalk);
+
+
+                myplayer.GetComponent<PlayerInfo>().uid = p.uid;
+                myplayer.GetComponent<PlayerInfo>().canTalk = p.canTalk;
+                myplayer.GetComponent<PlayerInfo>().fname = p.fname;
+                CharacterInstantiated(myplayer);
+            }
+            PhotonNetwork.room.SetCustomProperties(h);
+            ExitGames.Client.Photon.Hashtable playeraAdd = new ExitGames.Client.Photon.Hashtable();
+            playeraAdd.Add("myspawn", 100);
+            PhotonNetwork.player.SetCustomProperties(playeraAdd);
         }
-        ExitGames.Client.Photon.Hashtable tmp = PhotonNetwork.room.customProperties;
-        i = 0;
-        int j = 0;
-        foreach (var player in PhotonNetwork.playerList)
+        else
         {
-            //<<<<<<< HEAD
-            //if (name.Contains("spawnPlayer"))
-            //{
-                //Debug.Log(name);
-                //usedSpawns[i] = ((int)(tmp[name]));
-                //Debug.Log(usedSpawns[i]);
-                //++i;
-                //=======
-                if (player.customProperties["myspawn"] != null)
+            int i = 0;
+            int[] usedSpawns = new int[spawnPoints.Length];
+            for (i = 0; i < usedSpawns.Length; ++i)
+            {
+                usedSpawns[i] = -1;
+            }
+            ExitGames.Client.Photon.Hashtable tmp = PhotonNetwork.room.customProperties;
+            i = 0;
+            int j = 0;
+            foreach (var player in PhotonNetwork.playerList)
+            {
+                if (player.customProperties["myspawn"] != null && (int)player.customProperties["myspawn"] != (int)100)
                 {
                     j = (int)player.customProperties["myspawn"];
                     usedSpawns[j] = j;
-                    //>>>>>>> development
-                }
-            //}
-        }
-        for (i = 0; i < usedSpawns.Length; ++i)
-        {
-            bool unavailable = false;
-            for (j = 0; j < usedSpawns.Length; ++j)
-            {
-                if (i == usedSpawns[j])
-                {
-                    unavailable = true;
                 }
             }
-            if (!unavailable)
-                break;
+            bool unavailable = false;
+            for (i = 0; i < usedSpawns.Length; ++i)
+            {
+                unavailable = false;
+                for (j = 0; j < usedSpawns.Length; ++j)
+                {
+                    if (i == usedSpawns[j])
+                    {
+                        unavailable = true;
+                    }
+                }
+                if (!unavailable)
+                    break;
+            }
+            if(unavailable)
+            {
+                SceneManager.LoadScene("ClassroomFull");
+            }
+            Transform t = spawnPoints[i];
+
+
+            GameObject myplayer = PhotonNetwork.Instantiate(prefabName, t.position, t.rotation, 0);
+            if (myplayer)
+            {
+
+                ExitGames.Client.Photon.Hashtable canTalk = new ExitGames.Client.Photon.Hashtable();
+                canTalk.Add(p.uid, p.canTalk);
+                PhotonNetwork.room.SetCustomProperties(canTalk);
+
+
+                myplayer.GetComponent<PlayerInfo>().uid = p.uid;
+                myplayer.GetComponent<PlayerInfo>().canTalk = p.canTalk;
+                myplayer.GetComponent<PlayerInfo>().fname = p.fname;
+                CharacterInstantiated(myplayer);
+            }
+            ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
+            h.Add("spawnPlayer" + i, i);
+            PhotonNetwork.room.SetCustomProperties(h);
+            ExitGames.Client.Photon.Hashtable playeraAdd = new ExitGames.Client.Photon.Hashtable();
+            playeraAdd.Add("myspawn", i);
+            PhotonNetwork.player.SetCustomProperties(playeraAdd);
         }
-        Transform t = spawnPoints[i];
-
-
-        GameObject myplayer = PhotonNetwork.Instantiate(prefabName, t.position, t.rotation, 0);
-        if (myplayer)
-        {
-
-            ExitGames.Client.Photon.Hashtable canTalk = new ExitGames.Client.Photon.Hashtable();
-            canTalk.Add(p.uid, p.canTalk);
-            PhotonNetwork.room.SetCustomProperties(canTalk);
-
-
-            myplayer.GetComponent<PlayerInfo>().uid = p.uid;
-            myplayer.GetComponent<PlayerInfo>().canTalk = p.canTalk;
-            myplayer.GetComponent<PlayerInfo>().fname = p.fname;
-            CharacterInstantiated(myplayer);
-        }
-        ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
-        h.Add("spawnPlayer" + i, i);
-        PhotonNetwork.room.SetCustomProperties(h);
-        ExitGames.Client.Photon.Hashtable playeraAdd = new ExitGames.Client.Photon.Hashtable();
-        playeraAdd.Add("myspawn", i);
-        PhotonNetwork.player.SetCustomProperties(playeraAdd);
     }
 
     void Update()
@@ -139,15 +159,15 @@ public class NetworkManager : MonoBehaviour
         if (numPlayers != PhotonNetwork.playerList.Length)
         {
             int i = 0;
-            int[] usedSpawns = new int[8];
+            int[] usedSpawns = new int[spawnPoints.Length];
             for (i = 0; i < usedSpawns.Length; ++i)
             {
                 usedSpawns[i] = -1;
             }
             int j = 0;
             foreach (var player in PhotonNetwork.playerList)
-            {
-                if (player.customProperties["myspawn"] != null)
+            { 
+                if (player.customProperties["myspawn"] != null && (int)player.customProperties["myspawn"] != 100)
                 {
                     j = (int)player.customProperties["myspawn"];
                     usedSpawns[j] = j;
@@ -159,11 +179,7 @@ public class NetworkManager : MonoBehaviour
                 h.Add("spawnPlayer" + i, usedSpawns[i]);
             }
             PhotonNetwork.room.SetCustomProperties(h);
-            //<<<<<<< HEAD
-
-            //=======
             numPlayers = PhotonNetwork.playerList.Length;
-            //>>>>>>> development
         }
     }
 

@@ -19,7 +19,7 @@ public class ClassInfo  {
         startDate= RequestHelper.GetValue(row, "startDate");
         endDate = RequestHelper.GetValue(row, "endDate");
         daysTaught = RequestHelper.GetValue(row, "daysTaught");
-        //maxEnrolled = int.Parse(RequestHelper.GetValue(row, "maxEnrolled"));
+        maxEnrolled = int.Parse(RequestHelper.GetValue(row, "maxEnrolled"));
         teacherName = RequestHelper.GetValue(row, "firstName") + " " + RequestHelper.GetValue(row, "lastName");
     }
 

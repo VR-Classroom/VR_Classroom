@@ -180,10 +180,12 @@ public class ScrollableList : MonoBehaviour
     {
         GameObject[] gos = GameObject.FindGameObjectsWithTag("PlayerInfo");
         PlayerInfo p = (PlayerInfo)gos[0].GetComponent(typeof(PlayerInfo));
-        p.setRoomName(c.courseName);
+        p.setRoomName(c.cid + "");
         //Debug.Log("Button clicked = " + buttonNo);
 
-        SceneManager.LoadScene("classroom");
+        //SceneManager.LoadScene("classroom");
+        //SceneManager.LoadScene("classroom-48" );
+        SceneManager.LoadScene("classroom-" + c.maxEnrolled);
     }
 
     void DeleteClick(ClassInfo c)

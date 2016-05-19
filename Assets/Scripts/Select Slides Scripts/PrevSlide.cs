@@ -4,7 +4,7 @@ using System.Collections;
 public class PrevSlide : MonoBehaviour {
 
     bool hitbyraycast = false;
-    public GameObject projector;
+    public GameObject []projectors;
     PlayerInfo p;
 
     // Use this for initialization
@@ -29,6 +29,7 @@ public class PrevSlide : MonoBehaviour {
     {
         if (hitbyraycast && Input.GetKeyDown(KeyCode.Mouse0))
         {
+            foreach(GameObject projector in projectors)
             projector.GetComponent<Change_Mesh_Render>().prevSlide();
         }
 
@@ -38,7 +39,7 @@ public class PrevSlide : MonoBehaviour {
         }
         else
         {
-            gameObject.GetComponent<Renderer>().material.color = Color.black;
+            gameObject.GetComponent<Renderer>().material.color = Color.white;
         }
         hitbyraycast = false;
     }

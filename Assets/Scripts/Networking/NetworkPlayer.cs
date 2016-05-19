@@ -44,18 +44,6 @@ public class NetworkPlayer : Photon.MonoBehaviour{
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            ExitGames.Client.Photon.Hashtable tmp = PhotonNetwork.player.customProperties;
-            int i = (int)(tmp["myspawn"]);
-            ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
-            h.Add("spawnPlayer" + i, -1);
-            PhotonNetwork.room.SetCustomProperties(h);
-            PhotonNetwork.DestroyPlayerObjects(PhotonNetwork.player);
-            Application.Quit();
-        }
-
-
         ExitGames.Client.Photon.Hashtable tmpRoom= PhotonNetwork.room.customProperties;
         if (p != null&& tmpRoom != null && tmpRoom[p.uid] != null)
         {

@@ -11,8 +11,11 @@ public class CreateClassMenu : MonoBehaviour
 
     public Button createClass;
 
+    public Dropdown ClassSize;
+
     string realDays;
     PlayerInfo p;
+    int maxEnroll;
 
     // Use this for initialization
     void Start()
@@ -22,9 +25,10 @@ public class CreateClassMenu : MonoBehaviour
 
         courseName = courseName.GetComponent<InputField>();
         daysTaught = daysTaught.GetComponent<InputField>();
+        ClassSize = ClassSize.GetComponent<Dropdown>();
 
         createClass = createClass.GetComponent<Button>();
-        
+
     }
 
     // Update is called once per frame
@@ -45,12 +49,14 @@ public class CreateClassMenu : MonoBehaviour
     {
         string cn = courseName.text.Trim();
         string dy = daysTaught.text.Trim();
+        maxEnroll = int.Parse(ClassSize.options[ClassSize.value].text.Trim());
 
         if (cn.Length == 0)
         {
             courseName.GetComponent<Image>().color = Color.red;
             return;
-        } else if (dy.Length == 0)
+        }
+        else if (dy.Length == 0)
         {
             daysTaught.GetComponent<Image>().color = Color.red;
             return;
@@ -58,12 +64,12 @@ public class CreateClassMenu : MonoBehaviour
 
         dy = dy.Replace("(", "");
         dy = dy.Replace(")", "");
-        if(dy.Length > 9)
+        if (dy.Length > 9)
         {
             daysTaught.GetComponent<Image>().color = Color.red;
         }
         string[] days = dy.Split(',');
-        string[] valid = {"M","T","W","R","F","SA","SU"};
+        string[] valid = { "M", "T", "W", "R", "F", "SA", "SU" };
 
         bool isValidDay = false;
         for (int i = 0; i < days.Length; ++i)
@@ -71,7 +77,7 @@ public class CreateClassMenu : MonoBehaviour
             isValidDay = false;
             for (int j = 0; j < valid.Length; ++j)
             {
-                if(days[i].ToUpper() == valid[j])
+                if (days[i].ToUpper() == valid[j])
                 {
                     isValidDay = true;
                     break;
@@ -89,7 +95,7 @@ public class CreateClassMenu : MonoBehaviour
                 realDays += days[i].ToUpper() + ",";
             }
         }
-        realDays = realDays.Substring(0,realDays.Length-1);
+        realDays = realDays.Substring(0, realDays.Length - 1);
         StartCoroutine(sendNewClass());
 
     }
@@ -103,6 +109,7 @@ public class CreateClassMenu : MonoBehaviour
         form.AddField("CNAME", courseName.text.Trim());
         form.AddField("UID", p.uid);
         form.AddField("DAYS", realDays);
+        form.AddField("MAXENROLL", maxEnroll);
 
         WWW download = new WWW(RequestHelper.URL_CREATE_CLASS, form);
 
