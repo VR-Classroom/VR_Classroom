@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class NetworkManager : MonoBehaviour
 {
 
-    const string VERSION = "v0.1.0";
+    const string VERSION = "v0.1.1";
     public string roomName = "TEST";
     public string prefabName = "User";
     public Transform[] spawnPoints;
@@ -83,7 +83,7 @@ public class NetworkManager : MonoBehaviour
 
                 myplayer.GetComponent<PlayerInfo>().uid = p.uid;
                 myplayer.GetComponent<PlayerInfo>().canTalk = p.canTalk;
-                myplayer.GetComponent<PlayerInfo>().fname = p.fname;
+                myplayer.GetComponent<PlayerInfo>().dispName = p.dispName;
                 CharacterInstantiated(myplayer);
             }
             PhotonNetwork.room.SetCustomProperties(h);
@@ -142,7 +142,7 @@ public class NetworkManager : MonoBehaviour
 
                 myplayer.GetComponent<PlayerInfo>().uid = p.uid;
                 myplayer.GetComponent<PlayerInfo>().canTalk = p.canTalk;
-                myplayer.GetComponent<PlayerInfo>().fname = p.fname;
+                myplayer.GetComponent<PlayerInfo>().dispName = p.dispName;
                 CharacterInstantiated(myplayer);
             }
             ExitGames.Client.Photon.Hashtable h = new ExitGames.Client.Photon.Hashtable();
