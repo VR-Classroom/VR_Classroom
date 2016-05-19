@@ -40,7 +40,7 @@ public class NetworkPlayer : Photon.MonoBehaviour{
                 //Debug.Log("Updating Main camera for name and speaker");
                 speaker.GetComponent<LookAtCamera>().c = mainc;
                 name.GetComponent<LookAtCamera>().c = mainc;
-                name.text = gameObject.GetComponent<PlayerInfo>().fname;
+                name.text = gameObject.GetComponent<PlayerInfo>().dispName;
             }
         }
 
